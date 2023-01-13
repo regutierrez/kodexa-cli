@@ -31,7 +31,7 @@ allows you to configure components and manage aspects of your Kodexa Platform in
 
 ## Documentation & Examples
 
-Documentation is available on [Github](https://docs.kodexa.com)
+Documentation is available at the [Kodexa Documentation Portal](https://docs.kodexa.com)
 
 ## Current Development
 
