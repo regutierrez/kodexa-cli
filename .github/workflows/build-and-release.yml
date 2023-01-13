@@ -1,5 +1,7 @@
 name: Kodexa CLI Python Package
 
+permissions: write-all
+
 on:
   push:
     branches:
@@ -32,8 +34,19 @@ jobs:
       - name: Build Package
         run: |
           poetry build
-#      - name: Publish a Python distribution to PyPI
-#        uses: pypa/gh-action-pypi-publish@release/v1
-#        with:
-#          user: __token__
-#          password: ${{ secrets.PYPI_TOKEN }}
+      - name: Publish a Python distribution to PyPI
+        run: |
+          poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
+          poetry publish
+      - name: Commit new version
+        run: |
+          status=$(git status)
+          if [[ "$status" == *"nothing to commit"* ]]; then
+            echo "Nothing to commit"
+          else
+            git config --global user.email "helm-docs@github-action.com"
+            git config --global user.name "helm-docs"
+            git add pyproject.toml
+            git commit -m "Update version"  -m "[skip ci]"
+            git push
+          fi
