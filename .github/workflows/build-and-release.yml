@@ -6,7 +6,8 @@ on:
       - 'main'
 
 jobs:
-  build-linux:
+  build: 
+    name: Package & Release
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
