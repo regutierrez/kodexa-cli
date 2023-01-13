@@ -6,6 +6,9 @@ authors = ["Romar Cablao <rcablao@kodexa.com>"]
 readme = "README.md"
 packages = [{include = "kodexa_cli"}]
 
+[tool.poetry.scripts]
+my_package_cli = 'kodexa_cli:cli'
+
 [tool.poetry.dependencies]
 python = "^3.9"
 kodexa = "^6.0.116"
