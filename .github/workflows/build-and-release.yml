@@ -44,8 +44,8 @@ jobs:
           if [[ "$status" == *"nothing to commit"* ]]; then
             echo "Nothing to commit"
           else
-            git config --global user.email "helm-docs@github-action.com"
-            git config --global user.name "helm-docs"
+            git config --global user.email "github-action@github-action.com"
+            git config --global user.name "github-action"
             git add pyproject.toml
             git commit -m "Update version"  -m "[skip ci]"
             git push
