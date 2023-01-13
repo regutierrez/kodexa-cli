@@ -7,7 +7,7 @@ readme = "README.md"
 packages = [{include = "kodexa_cli"}]
 
 [tool.poetry.scripts]
-my_package_cli = 'kodexa_cli:cli'
+kodexa = 'kodexa_cli:cli'
 
 [tool.poetry.dependencies]
 python = "^3.9"
