@@ -1,6 +1,6 @@
 # Kodexa Command Line Tools
 
-![Build](https://github.com/kodexa-ai/kodexa-cli/workflows/Python%20Package%20Using%20Anaconda/badge.svg)
+[![Kodexa CLI Python Package](https://github.com/kodexa-ai/kodexa-cli/actions/workflows/build-and-release.yml/badge.svg)](https://github.com/kodexa-ai/kodexa-cli/actions/workflows/build-and-release.yml)
 
 ![img.png](https://docs.kodexa.com/img.png)
 
