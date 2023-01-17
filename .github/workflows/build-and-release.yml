@@ -4,7 +4,11 @@ on:
   push:
     branches:
       - 'main'
-
+    paths:
+      - '**'
+      - '!docs/**'
+      - '!.github/**'
+      
 jobs:
   build: 
     name: Package & Release
