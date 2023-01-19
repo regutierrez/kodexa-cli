@@ -609,14 +609,14 @@ format-nongpl = ["idna", "jsonpointer (>1.13)", "rfc3339-validator", "rfc3986-va
 
 [[package]]
 name = "kodexa"
-version = "6.0.144"
+version = "6.0.146"
 description = "Python SDK for the Kodexa Platform"
 category = "main"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "kodexa-6.0.144-py3-none-any.whl", hash = "sha256:9ac028a57b418047ba62336b3963633b9caba5c50bbb896bebc7b0f11ea4bb6e"},
-    {file = "kodexa-6.0.144.tar.gz", hash = "sha256:08677b9ceff1258f54c24878b67d13e07b37f4a50643e8a33892c17d59e51f70"},
+    {file = "kodexa-6.0.146-py3-none-any.whl", hash = "sha256:3de27f68b3e0ce4b73605f70ae004d35f7eb087eaad0835ff1137e6481840f71"},
+    {file = "kodexa-6.0.146.tar.gz", hash = "sha256:14c75b870386621298ec75e52e930f6bf10de899e162bbdc1d2417ffe41cccd1"},
 ]
 
 [package.dependencies]
@@ -997,18 +997,15 @@ dev = ["black", "mypy", "pytest"]
 
 [[package]]
 name = "packaging"
-version = "21.3"
+version = "23.0"
 description = "Core utilities for Python packages"
-category = "main"
+category = "dev"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 files = [
-    {file = "packaging-21.3-py3-none-any.whl", hash = "sha256:ef103e05f519cdc783ae24ea4e2e0f508a9c99b2d4969652eed6a2e1ea5bd522"},
-    {file = "packaging-21.3.tar.gz", hash = "sha256:dd47c42927d89ab911e606518907cc2d3a1f38bbd026385970643f9c5b8ecfeb"},
+    {file = "packaging-23.0-py3-none-any.whl", hash = "sha256:714ac14496c3e68c99c29b00845f7a2b85f3bb6f1078fd9f72fd20f0570002b2"},
+    {file = "packaging-23.0.tar.gz", hash = "sha256:b6ad297f8907de0fa2fe1ccbd26fdaf387f5f47c7275fedf8cce89f99446cf97"},
 ]
-
-[package.dependencies]
-pyparsing = ">=2.0.2,<3.0.5 || >3.0.5"
 
 [[package]]
 name = "pathspec"
@@ -1068,19 +1065,18 @@ files = [
 
 [[package]]
 name = "prance"
-version = "0.22.11.4.0"
+version = "0.21.8.0"
 description = "Resolving Swagger/OpenAPI 2.0 and 3.0.0 Parser"
 category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "prance-0.22.11.4.0-py3-none-any.whl", hash = "sha256:c15e9ca889b56262e4c2aee354f52918ba5e54f46bb3da42b806d8bbd8255ee9"},
-    {file = "prance-0.22.11.4.0.tar.gz", hash = "sha256:814a523bc1ff18383c12cb523ce44c90fe8792bf5f48d8cc33c9f658276658ed"},
+    {file = "prance-0.21.8.0-py3-none-any.whl", hash = "sha256:51ec41d10b317bf5d4e74782a7f7f0c0488c6042433b5b4fde2a988cd069d235"},
+    {file = "prance-0.21.8.0.tar.gz", hash = "sha256:ce06feef8814c3436645f3b094e91067b1a111bc860a51f239f93437a8d4b00e"},
 ]
 
 [package.dependencies]
 chardet = ">=3.0,<5.0"
-packaging = ">=21.3,<22.0"
 requests = ">=2.25,<3.0"
 "ruamel.yaml" = ">=0.17.10,<0.18.0"
 semver = ">=2.13,<3.0"
@@ -1091,7 +1087,7 @@ cli = ["click (>=7.0,<8.0)"]
 dev = ["bumpversion (>=0.6)", "pytest (>=6.1)", "pytest-cov (>=2.11)", "sphinx (>=3.4)", "towncrier (>=19.2)", "tox (>=3.4)"]
 flex = ["flex (>=6.13,<7.0)"]
 icu = ["PyICU (>=2.4,<3.0)"]
-osv = ["openapi-spec-validator (>=0.5.1,<0.6.0)"]
+osv = ["openapi-spec-validator (>=0.2.1)"]
 ssv = ["swagger-spec-validator (>=2.4,<3.0)"]
 
 [[package]]
@@ -1244,21 +1240,6 @@ files = [
 
 [package.dependencies]
 markdown = ">=3.2"
-
-[[package]]
-name = "pyparsing"
-version = "3.0.9"
-description = "pyparsing module - Classes and methods to define and execute parsing grammars"
-category = "main"
-optional = false
-python-versions = ">=3.6.8"
-files = [
-    {file = "pyparsing-3.0.9-py3-none-any.whl", hash = "sha256:5026bae9a10eeaefb61dab2f09052b9f4307d44aee4eda64b309723d8d206bbc"},
-    {file = "pyparsing-3.0.9.tar.gz", hash = "sha256:2b020ecf7d21b687f219b71ecad3631f644a47f01403fa1d1036b0c6416d70fb"},
-]
-
-[package.extras]
-diagrams = ["jinja2", "railroad-diagrams"]
 
 [[package]]
 name = "pyrsistent"
