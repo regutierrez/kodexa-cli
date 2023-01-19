@@ -1,0 +1,27 @@
+name: Update documentations
+
+on:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'docs/**'
+
+jobs:
+  build:
+    name: Update documentations
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger a build in docs.kodexa.com
+        uses: convictional/trigger-workflow-and-wait@v1.6.1
+        with:
+          owner: kodexa-ai
+          repo: docs.kodexa.com
+          github_token: ${{ secrets.WORKFLOW_GITHUB_TOKEN_FOR_DOCS }}
+          github_user: rcablao-kodexa
+          workflow_file_name: documentation-deploy.yml
+          ref: main
+          wait_interval: 10
+          trigger_workflow: true
+          propagate_failure: false
+          wait_workflow: false
