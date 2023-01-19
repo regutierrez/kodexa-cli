@@ -92,12 +92,18 @@ def cli(info: Info, verbose: int):
     info.verbose = verbose
 
 
-@cli.command(help="Get details for a specific project")
-@click.argument('id', required=True, help="The project id")
+@cli.command
+@click.argument('project_id', required=True)
 @click.option('--url', default=KodexaPlatform.get_url(), help='The URL to the Kodexa server')
 @click.option('--token', default=KodexaPlatform.get_access_token(), help='Access token')
 @pass_info
 def project(_: Info, project_id: str, token: str, url: str):
+    """
+    Get details for a specific project.
+
+    project_id is the ID of the project to get details for.
+
+    """
 
     client = KodexaClient(url=url, access_token=token)
     project_instance = client.get_project(project_id)
@@ -114,13 +120,19 @@ def project(_: Info, project_id: str, token: str, url: str):
     project_instance.assistants.print_table()
 
 
-@cli.command(help="Upload the contents of a file or directory to a document store")
-@click.argument('ref', required=True, help="The reference to the document store")
-@click.argument('path', required=True, help="The path to the file or directory to upload")
+@cli.command()
+@click.argument('ref', required=True)
+@click.argument('path', required=True)
 @click.option('--url', default=KodexaPlatform.get_url(), help='The URL to the Kodexa server')
 @click.option('--token', default=KodexaPlatform.get_access_token(), help='Access token')
 @pass_info
 def upload(_: Info, ref: str, path: str, token: str, url: str):
+    """
+    Upload a file to the Kodexa platform.
+
+    ref is the reference to the document store to upload to.
+    path is the path to the file to upload.
+    """
 
     client = KodexaClient(url=url, access_token=token)
     document_store = client.get_object_by_ref('store', ref)
@@ -141,7 +153,7 @@ def upload(_: Info, ref: str, path: str, token: str, url: str):
         print(f"{ref} is not a document store")
 
 
-@cli.command(help="Deploy a component to a Kodexa platform instance from a file or stdin")
+@cli.command
 @click.option('--org', help='The slug for the organization to deploy to', required=False)
 @click.option('--slug', help='Override the slug for component (only works for a single component)', required=False)
 @click.option('--version', help='Override the version for component (only works for a single component)',
@@ -156,6 +168,9 @@ def upload(_: Info, ref: str, path: str, token: str, url: str):
 @pass_info
 def deploy(_: Info, org: Optional[str], file: str, url: str, token: str, format=None, update: bool = False,
            version=None, overlay: Optional[str] = None, slug=None):
+    """
+    Deploy a component to a Kodexa platform instance from a file or stdin
+    """
 
     client = KodexaClient(access_token=token, url=url)
 
@@ -222,17 +237,22 @@ def deploy(_: Info, org: Optional[str], file: str, url: str, token: str, format=
     print("Deployed :tada:")
 
 
-@cli.command(help="Get the logs for a specific execution")
-@click.argument('execution_id', required=True, help="The execution id to get the logs for")
+@cli.command()
+@click.argument('execution_id', required=True)
 @click.option('--url', default=KodexaPlatform.get_url(), help='The URL to the Kodexa server')
 @click.option('--token', default=KodexaPlatform.get_access_token(), help='Access token')
 @pass_info
 def logs(_: Info, execution_id: str, url: str, token: str):
+    """
+    Get the logs for a specific execution
+
+    execution_id is the id of the execution to get the logs for
+    """
     client = KodexaClient(url=url, access_token=token)
     client.executions.get(execution_id).logs()
 
 
-@cli.command(help="List the instances of the component or entity type")
+@cli.command()
 @click.argument('object_type', required=True)
 @click.argument('ref', required=False)
 @click.option('--url', default=KodexaPlatform.get_url(), help='The URL to the Kodexa server')
@@ -246,6 +266,12 @@ def logs(_: Info, execution_id: str, url: str, token: str):
 @pass_info
 def get(_: Info, object_type: str, ref: Optional[str], url: str, token: str, query: str, path: str = None, format=None,
         page: int = 1, pagesize: int = 10, sort: str = None):
+    """
+    List the instances of the component or entity type
+
+    object_type is the type of object to list (component, document, execution, etc.)
+    ref is the reference to the object
+    """
 
     client = KodexaClient(url=url, access_token=token)
 
@@ -284,9 +310,9 @@ def get(_: Info, object_type: str, ref: Optional[str], url: str, token: str, que
             print(f"You must provide a ref to get a specific object")
 
 
-@cli.command(help="Query the documents in a given document store")
-@click.argument('ref', required=True, help="The ref of the document store")
-@click.argument('query', default="*", help="The query to use")
+@cli.command()
+@click.argument('ref', required=True)
+@click.argument('query', default="*")
 @click.option('--url', default=KodexaPlatform.get_url(), help='The URL to the Kodexa server')
 @click.option('--token', default=KodexaPlatform.get_access_token(), help='Access token')
 @click.option('--download/--no-download', default=False, help='Download the KDDB for the latest in the family')
@@ -297,6 +323,13 @@ def get(_: Info, object_type: str, ref: Optional[str], url: str, token: str, que
 @pass_info
 def query(_: Info, query: str, ref: str, url: str, token: str, download: bool, download_native: bool, page: int,
           pagesize: int, sort: None):
+    """
+    Query the documents in a given document store
+
+    ref is the reference to the document store
+    query is the query to run
+
+    """
     client = KodexaClient(url=url, access_token=token)
     from kodexa.platform.client import DocumentStoreEndpoint
 
@@ -308,25 +341,37 @@ def query(_: Info, query: str, ref: str, url: str, token: str, download: bool, d
         raise Exception("Unable to find document store with ref " + ref)
 
 
-@cli.command(help="Export a project, and associated resources to a local zip file")
+@cli.command()
 @click.argument('project_id', required=True)
 @click.option('--url', default=KodexaPlatform.get_url(), help='The URL to the Kodexa server')
 @click.option('--token', default=KodexaPlatform.get_access_token(), help='Access token')
 @click.option('--output', help='The path to export to')
 @pass_info
 def export_project(_: Info, project_id: str, url: str, token: str, output: str):
+    """
+    Export a project, and associated resources to a local zip file
+
+    project_id is the id of the project to export
+    """
     client = KodexaClient(url, token)
     project_endpoint = client.projects.get(project_id)
     client.export_project(project_endpoint, output)
 
 
-@cli.command(help="Import a project, and associated resources from a local zip file")
+@cli.command()
 @click.argument('org_slug', required=True)
 @click.argument('path', required=True)
 @click.option('--url', default=KodexaPlatform.get_url(), help='The URL to the Kodexa server')
 @click.option('--token', default=KodexaPlatform.get_access_token(), help='Access token')
 @pass_info
 def import_project(_: Info, org_slug: str, url: str, token: str, path: str):
+    """
+    Import a project, and associated resources from a local zip file
+
+    org_slug is the slug of the organization to import into
+    path is the path to the zip file
+
+    """
     print("Importing project from {}".format(path))
 
     client = KodexaClient(url, token)
@@ -338,7 +383,7 @@ def import_project(_: Info, org_slug: str, url: str, token: str, path: str):
     print("Project imported")
 
 
-@cli.command(help="Send an event to an assistant")
+@cli.command()
 @click.argument('project_id', required=True)
 @click.argument('assistant_id', required=True)
 @click.option('--url', default=KodexaPlatform.get_url(), help='The URL to the Kodexa server')
@@ -347,6 +392,13 @@ def import_project(_: Info, org_slug: str, url: str, token: str, path: str):
 @click.option('--format', default=None, help='The format to use if from stdin (json, yaml)')
 @pass_info
 def send_event(_: Info, project_id: str, assistant_id: str, url: str, file: str, event_format: str, token: str):
+    """
+    Send an event to an assistant
+
+    project_id is the id of the project to send the event to
+    assistant_id is the id of the assistant to send the event to
+
+    """
 
     client = KodexaClient(url, token)
 
@@ -376,7 +428,7 @@ def send_event(_: Info, project_id: str, assistant_id: str, url: str, file: str,
     print("Event sent :tada:")
 
 
-@cli.command(help="Get the details for the Kodexa instance we are logged into")
+@cli.command()
 @pass_info
 @click.option('--python/--no-python', default=False, help='Print out the header for a Python file')
 def platform(_: Info, python: bool):
@@ -399,7 +451,7 @@ def platform(_: Info, python: bool):
         print("Kodexa is not logged in")
 
 
-@cli.command(help="Delete the given resource")
+@cli.command()
 @click.argument('object_type')
 @click.argument('ref')
 @click.option('--url', default=KodexaPlatform.get_url(), help='The URL to the Kodexa server')
@@ -408,16 +460,20 @@ def platform(_: Info, python: bool):
 def delete(_: Info, object_type: str, ref: str, url: str, token: str):
     """
     Delete the given resource (based on ref)
+
+    object_type is the type of object to delete (e.g. 'project', 'assistant', 'store')
+    ref is the ref of the object to delete
     """
     client = KodexaClient(url, token)
     client.get_object_by_ref(object_type, ref).delete()
 
 
-@cli.command(help="Logs into the specified platform and store credentials locally")
+@cli.command()
 @pass_info
 def login(_: Info):
     """Logs into the specified platform environment using the email address and password provided,
     then downloads and stores the personal access token (PAT) of the user.
+
     Once successfully logged in, calls to remote actions, pipelines, and workflows will be made to the
     platform that was set via this login function and will use the stored PAT for authentication.
 
@@ -435,23 +491,31 @@ def login(_: Info):
         KodexaPlatform.login(kodexa_url, username, password)
 
 
-@cli.command(help="Generate mkdocs documentation for components in kodexa.yml")
+@cli.command()
 @click.option('--path', default=os.getcwd(), help='Path to folder container kodexa.yml (defaults to current)')
 @pass_info
 def mkdocs(_: Info, path: str):
+    """
+    Generate mkdocs documentation for components in kodexa.yml
+
+    """
     metadata_obj = ExtensionHelper.load_metadata(path)
     from kodexa_cli.documentation import generate_documentation
     generate_documentation(metadata_obj)
 
 
-@cli.command(help="Get the version of the CLI")
+@cli.command()
 @pass_info
 def version(_: Info):
+    """
+    Get the version of the CLI
+
+    """
     import pkg_resources
     print("Kodexa Version:", pkg_resources.get_distribution("kodexa").version)
 
 
-@cli.command(help="Package a kodexa.yml into a complete kodexa.json for deployment")
+@cli.command()
 @click.option('--path', default=os.getcwd(), help='Path to folder container kodexa.yml (defaults to current)')
 @click.option('--output', default=os.getcwd() + "/dist",
               help='Path to the output folder (defaults to dist under current)')
