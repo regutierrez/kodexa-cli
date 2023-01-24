@@ -493,9 +493,9 @@ def login(_: Info):
 
 
 @cli.command()
-@click.argument('file_pattern', default='**/kodexa.yml')
+@click.argument('files', nargs=-1)
 @pass_info
-def mkdocs(_: Info, file_pattern: str):
+def mkdocs(_: Info, files: list[str]):
     """
     Generate mkdocs documentation for components
 
@@ -503,7 +503,8 @@ def mkdocs(_: Info, file_pattern: str):
 
     """
     metadata_components = []
-    for path in glob.glob(file_pattern, recursive=True):
+    for path in files:
+        print("Processing metadata from ", path)
         if path.endswith('.json'):
             metadata_components.append(json.loads(open(path).read()))
         else:

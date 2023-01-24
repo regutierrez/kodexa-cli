@@ -58,8 +58,11 @@ def generate_documentation(metadata_components):
     os.makedirs('docs', exist_ok=True)
     components = document_components(metadata_components)
 
-    with open("mkdocs.yml", "r") as mkdocs_file:
-        mkdocs = yaml.safe_load(mkdocs_file.read())
+    try:
+        with open("mkdocs.yml", "r") as mkdocs_file:
+            mkdocs = yaml.safe_load(mkdocs_file.read())
+    except FileNotFoundError:
+        mkdocs = {'site_name':'Docs', 'nav': []}
 
     for reference in mkdocs['nav']:
         if 'Reference' in reference:
@@ -67,7 +70,9 @@ def generate_documentation(metadata_components):
 
     COMPONENT_NAME_DICT = {
         'actions': 'Actions',
-        'stores': 'Stores',
+        'dataStores': 'Data Stores',
+        'documentStores': 'Document Stores',
+        'models': 'Models',
         'projectTemplates': 'Project Templates',
         'pipelines': 'Pipelines',
         'taxonomies': 'Taxonomies',
@@ -92,7 +97,9 @@ def generate_documentation(metadata_components):
 def document_components(metadata_objects):
     components = {
         'actions': [],
-        'stores': [],
+        'documentStores': [],
+        'dataStores': [],
+        'models': [],
         'projectTemplates': [],
         'pipelines': [],
         'taxonomies': [],
@@ -115,22 +122,33 @@ def document_components(metadata_objects):
                                component))
 
         if component.type == 'store':
-            components['projectTemplates'].append(
-                write_template("store.jinja2", f"docs/{camel_to_kebab(component.type)}", f"{component.slug}.md", component))
+
+            component_type = 'documentStores'
+            if component.store_type == 'TABLE':
+                component_type = 'dataStores'
+            if component.store_type == 'MODEL':
+                component_type = 'models'
+
+            components[component_type].append(
+                write_template("store.jinja2", f"docs/{camel_to_kebab(component.type)}", f"{component.slug}.md",
+                               component))
 
         if component.type == 'projectTemplate':
             components['projectTemplates'].append(
-                write_template("project-template.jinja2", f"docs/{camel_to_kebab(component.type)}", f"{component.slug}.md",
+                write_template("project-template.jinja2", f"docs/{camel_to_kebab(component.type)}",
+                               f"{component.slug}.md",
                                component))
 
         if component.type == 'extensionPack':
             components['extensionPacks'].append(
-                write_template("extension-pack.jinja2", f"docs/{camel_to_kebab(component.type)}", f"{component.slug}.md",
+                write_template("extension-pack.jinja2", f"docs/{camel_to_kebab(component.type)}",
+                               f"{component.slug}.md",
                                component))
 
         if component.type == 'pipeline':
             components['pipelines'].append(
-                write_template("pipeline.j2", f"docs/{camel_to_kebab(component.type)}", f"{component.slug}.md", component))
+                write_template("pipeline.j2", f"docs/{camel_to_kebab(component.type)}", f"{component.slug}.md",
+                               component))
 
         if component.type == 'taxonomy':
             components['taxonomies'].append(
@@ -150,7 +168,9 @@ def document_components(metadata_objects):
         if 'services' in metadata:
             service_components = document_components(metadata['services'])
             components['actions'] += service_components['actions']
-            components['stores'] += service_components['stores']
+            components['models'] += service_components['models']
+            components['documentStores'] += service_components['documentStores']
+            components['dataStores'] += service_components['dataStores']
             components['projectTemplates'] += service_components['projectTemplates']
             components['pipelines'] += service_components['pipelines']
             components['taxonomies'] += service_components['taxonomies']
