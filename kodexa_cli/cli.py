@@ -6,6 +6,7 @@ This is the Kodexa CLI, it can be used to allow you to work with an instance of 
 
 It supports interacting with the API, listing and viewing components.  Note it can also be used to login and logout
 """
+import glob
 import json
 import logging
 import os
@@ -492,16 +493,23 @@ def login(_: Info):
 
 
 @cli.command()
-@click.option('--path', default=os.getcwd(), help='Path to folder container kodexa.yml (defaults to current)')
+@click.argument('file_pattern', default='**/kodexa.yml')
 @pass_info
-def mkdocs(_: Info, path: str):
+def mkdocs(_: Info, file_pattern: str):
     """
-    Generate mkdocs documentation for components in kodexa.yml
+    Generate mkdocs documentation for components
+
+    file_pattern is the pattern to use to find the kodexa.yml files (default is **/kodexa.yml)
 
     """
-    metadata_obj = ExtensionHelper.load_metadata(path)
+    metadata_components = []
+    for path in glob.glob(file_pattern, recursive=True):
+        if path.endswith('.json'):
+            metadata_components.append(json.loads(open(path).read()))
+        else:
+            metadata_components.append(yaml.safe_load(open(path).read()))
     from kodexa_cli.documentation import generate_documentation
-    generate_documentation(metadata_obj)
+    generate_documentation(metadata_components)
 
 
 @cli.command()

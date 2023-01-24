@@ -48,7 +48,7 @@ def get_template_env():
     return jinja2.Environment(loader=template_loader, autoescape=True)
 
 
-def generate_documentation(metadata):
+def generate_documentation(metadata_components):
     """Given the metadata object from a kodexa.yml generate the documentation
 
     Args:
@@ -56,7 +56,7 @@ def generate_documentation(metadata):
 
     """
     os.makedirs('docs', exist_ok=True)
-    components = document_component(metadata)
+    components = document_components(metadata_components)
 
     with open("mkdocs.yml", "r") as mkdocs_file:
         mkdocs = yaml.safe_load(mkdocs_file.read())
@@ -89,7 +89,7 @@ def generate_documentation(metadata):
         mkdocs_file.write(yaml.dump(mkdocs))
 
 
-def document_component(metadata):
+def document_components(metadata_objects):
     components = {
         'actions': [],
         'stores': [],
@@ -103,52 +103,52 @@ def document_component(metadata):
 
     client = KodexaClient()
 
-    if not isinstance(metadata, dict):
-        metadata = metadata.to_dict()
+    for metadata in metadata_objects:
+        if not isinstance(metadata, dict):
+            metadata = metadata.to_dict()
 
-    component = client.deserialize(metadata)
+        component = client.deserialize(metadata)
 
-    if component.type == 'action':
-        components['actions'].append(
-            write_template("action.jinja2", f"docs/{camel_to_kebab(component.type)}", f"{component.slug}.md",
-                           component))
+        if component.type == 'action':
+            components['actions'].append(
+                write_template("action.jinja2", f"docs/{camel_to_kebab(component.type)}", f"{component.slug}.md",
+                               component))
 
-    if component.type == 'store':
-        components['projectTemplates'].append(
-            write_template("store.jinja2", f"docs/{camel_to_kebab(component.type)}", f"{component.slug}.md", component))
+        if component.type == 'store':
+            components['projectTemplates'].append(
+                write_template("store.jinja2", f"docs/{camel_to_kebab(component.type)}", f"{component.slug}.md", component))
 
-    if component.type == 'projectTemplate':
-        components['projectTemplates'].append(
-            write_template("project-template.jinja2", f"docs/{camel_to_kebab(component.type)}", f"{component.slug}.md",
-                           component))
+        if component.type == 'projectTemplate':
+            components['projectTemplates'].append(
+                write_template("project-template.jinja2", f"docs/{camel_to_kebab(component.type)}", f"{component.slug}.md",
+                               component))
 
-    if component.type == 'extensionPack':
-        components['extensionPacks'].append(
-            write_template("extension-pack.jinja2", f"docs/{camel_to_kebab(component.type)}", f"{component.slug}.md",
-                           component))
+        if component.type == 'extensionPack':
+            components['extensionPacks'].append(
+                write_template("extension-pack.jinja2", f"docs/{camel_to_kebab(component.type)}", f"{component.slug}.md",
+                               component))
 
-    if component.type == 'pipeline':
-        components['pipelines'].append(
-            write_template("pipeline.j2", f"docs/{camel_to_kebab(component.type)}", f"{component.slug}.md", component))
+        if component.type == 'pipeline':
+            components['pipelines'].append(
+                write_template("pipeline.j2", f"docs/{camel_to_kebab(component.type)}", f"{component.slug}.md", component))
 
-    if component.type == 'taxonomy':
-        components['taxonomies'].append(
-            write_template("taxonomy.jinja2", f"docs/{camel_to_kebab(component.type)}", f"{component.slug}.md",
-                           component))
+        if component.type == 'taxonomy':
+            components['taxonomies'].append(
+                write_template("taxonomy.jinja2", f"docs/{camel_to_kebab(component.type)}", f"{component.slug}.md",
+                               component))
 
-    if component.type == 'assistant':
-        components['assistantDefinitions'].append(
-            write_template("assistant.jinja2", f"docs/{camel_to_kebab(component.type)}", f"{component.slug}.md",
-                           component))
+        if component.type == 'assistant':
+            components['assistantDefinitions'].append(
+                write_template("assistant.jinja2", f"docs/{camel_to_kebab(component.type)}", f"{component.slug}.md",
+                               component))
 
-    if component.type == 'modelRuntime':
-        components['modelRuntimes'].append(
-            write_template("model-runtime.jinja2", f"docs/{camel_to_kebab(component.type)}", f"{component.slug}.md",
-                           component))
+        if component.type == 'modelRuntime':
+            components['modelRuntimes'].append(
+                write_template("model-runtime.jinja2", f"docs/{camel_to_kebab(component.type)}", f"{component.slug}.md",
+                               component))
 
-    if 'services' in metadata:
-        for service in metadata['services']:
-            service_components = document_component(service)
+        if 'services' in metadata:
+            service_components = document_components(metadata['services'])
             components['actions'] += service_components['actions']
             components['stores'] += service_components['stores']
             components['projectTemplates'] += service_components['projectTemplates']
