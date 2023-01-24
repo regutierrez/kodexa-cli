@@ -17,6 +17,7 @@ PyYAML = "^6.0"
 rich = "13.0.1"
 flake8 = "^6.0.0"
 mypy = "^0.991"
+pandas = "^1.5.3"
 
 
 [tool.poetry.group.dev.dependencies]

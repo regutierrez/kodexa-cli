@@ -1,10 +1,10 @@
 """
 Utilities to support generating documentation based on the metadata in a kodexa.yml
 """
-import json
 import os
 import jinja2
-from addict import Dict
+import yaml
+from kodexa import KodexaClient
 
 
 def camel_to_kebab(s):
@@ -58,102 +58,35 @@ def generate_documentation(metadata):
     os.makedirs('docs', exist_ok=True)
     components = document_component(metadata)
 
-    write_template("index.j2", f"docs/overview", f"index.md", components)
+    with open("mkdocs.yml", "r") as mkdocs_file:
+        mkdocs = yaml.safe_load(mkdocs_file.read())
 
-    toc = "overview\n    index\n"
+    for reference in mkdocs['nav']:
+        if 'Reference' in reference:
+            mkdocs['nav'].remove(reference)
 
-    toc = toc + "assistant\n"
-    for assistantDefinition in components['assistantDefinitions']:
-        toc += f"    {assistantDefinition}\n"
+    COMPONENT_NAME_DICT = {
+        'actions': 'Actions',
+        'stores': 'Stores',
+        'projectTemplates': 'Project Templates',
+        'pipelines': 'Pipelines',
+        'taxonomies': 'Taxonomies',
+        'assistantDefinitions': 'Assistant Definitions',
+        'modelRuntimes': 'Model Runtimes',
+        'extensionPacks': 'Extension Packs'
+    }
 
-    toc = toc + "project-template\n"
-    for projectTemplate in components['projectTemplates']:
-        toc += f"    {projectTemplate}\n"
+    new_reference = []
+    for component in components:
+        if len(components[component]) > 0:
+            new_reference.append({COMPONENT_NAME_DICT[component]: []})
+            for item in components[component]:
+                new_reference[-1][COMPONENT_NAME_DICT[component]].append({item['metadata'].name: item['path']})
 
-    toc = toc + "model-runtime\n"
-    for projectTemplate in components['modelRuntimes']:
-        toc += f"    {projectTemplate}\n"
+    mkdocs['nav'].append({'Reference': new_reference})
 
-    toc = toc + "taxonomy\n"
-    for taxonomy in components['taxonomies']:
-        toc += f"    {taxonomy}\n"
-
-    toc = toc + "store\n"
-    for store in components['stores']:
-        toc += f"    {store}\n"
-
-    toc = toc + "action\n"
-    for action in components['actions']:
-        toc += f"    {action}\n"
-
-    toc = toc + "pipeline\n"
-    for pipeline in components['pipelines']:
-        toc += f"    {pipeline}\n"
-
-    with open("docs/toc", "w") as text_file:
-        text_file.write(toc)
-
-
-def transform_taxons(taxons):
-    """
-    Transform the taxons into a format that works with our markdown helper
-
-    Args:
-      taxons: the taxons to transform
-
-    Returns:
-
-    """
-    simple_taxons = []
-    for taxon in taxons:
-        simple_taxon = {
-            'name': taxon['name'],
-            'taxonType': taxon['type'],
-            'description': taxon['description'] if 'description' in taxon else ''
-        }
-
-        if 'children' in taxon:
-            simple_taxon['children'] = transform_taxons(taxon['children'])
-
-        simple_taxons.append(simple_taxon)
-
-    return simple_taxons
-
-
-def transform_options(options):
-    """
-    Transform the options into a format that works with our markdown helper
-
-    Args:
-      options: the options to transform
-
-    Returns:
-
-    """
-    simple_options = []
-    for option in options:
-        description = ""
-        if option['required'] == True:
-            description += "**Required**\n"
-
-        if 'description' in option:
-            description = description + option['description']
-
-        if 'default' in option:
-            description = description + f" \nDefault: {option['default']}"
-
-        simple_option = {
-            'name': option['name'],
-            'description': description,
-            'type': option['type']
-        }
-
-        if option['type'] == 'object':
-            simple_option['children'] = transform_options(option['groupOptions'])
-
-        simple_options.append(simple_option)
-
-    return simple_options
+    with open("mkdocs.yml", "w") as mkdocs_file:
+        mkdocs_file.write(yaml.dump(mkdocs))
 
 
 def document_component(metadata):
@@ -168,52 +101,51 @@ def document_component(metadata):
         'extensionPacks': []
     }
 
-    if metadata.type == 'action':
-        options = metadata.metadata.options
-        print(json.dumps(options, indent=2))
-        write_template("action.j2", f"docs/{camel_to_kebab(metadata.type)}", f"{metadata.slug}.md", metadata)
-        components['actions'].append(f"{metadata.slug}")
-        with open(f"docs/{camel_to_kebab(metadata.type)}/{metadata.slug}-options.json", "w") as options_file:
-            options_file.write(json.dumps(transform_options(options), indent=2))
+    client = KodexaClient()
 
-    if metadata.type == 'store':
-        write_template("store.j2", f"docs/{camel_to_kebab(metadata.type)}", f"{metadata.slug}.md", metadata)
-        components['stores'].append(f"{metadata.slug}")
+    if not isinstance(metadata, dict):
+        metadata = metadata.to_dict()
 
-    if metadata.type == 'projectTemplate':
-        write_template("project-template.j2", f"docs/{camel_to_kebab(metadata.type)}", f"{metadata.slug}.md", metadata)
-        components['projectTemplates'].append(f"{metadata.slug}")
+    component = client.deserialize(metadata)
 
-    if metadata.type == 'extensionPack':
-        write_template("extension-pack.j2", f"docs/{camel_to_kebab(metadata.type)}", f"{metadata.slug}.md", metadata)
-        components['extensionPacks'].append(f"{metadata.slug}")
+    if component.type == 'action':
+        components['actions'].append(
+            write_template("action.jinja2", f"docs/{camel_to_kebab(component.type)}", f"{component.slug}.md",
+                           component))
 
-    if metadata.type == 'pipeline':
-        write_template("pipeline.j2", f"docs/{camel_to_kebab(metadata.type)}", f"{metadata.slug}.md", metadata)
-        components['pipelines'].append(f"{metadata.slug}")
+    if component.type == 'store':
+        components['projectTemplates'].append(
+            write_template("store.jinja2", f"docs/{camel_to_kebab(component.type)}", f"{component.slug}.md", component))
 
-    if metadata.type == 'taxonomy':
-        write_template("taxonomy.j2", f"docs/{camel_to_kebab(metadata.type)}", f"{metadata.slug}.md", metadata)
-        components['taxonomies'].append(f"{metadata.slug}")
-        with open(f"docs/{camel_to_kebab(metadata.type)}/{metadata.slug}-structure.json", "w") as taxonomy_file:
-            taxonomy_file.write(json.dumps(transform_taxons(metadata['taxons']), indent=2))
+    if component.type == 'projectTemplate':
+        components['projectTemplates'].append(
+            write_template("project-template.jinja2", f"docs/{camel_to_kebab(component.type)}", f"{component.slug}.md",
+                           component))
 
-    if metadata.type == 'assistant':
-        from kodexa.model.objects import AssistantDefinition
-        write_template("assistant.j2", f"docs/{camel_to_kebab(metadata.type)}", f"{metadata.slug}.md",
-                       AssistantDefinition.parse_obj(metadata))
-        components['assistantDefinitions'].append(f"{metadata.slug}")
-        with open(f"docs/{camel_to_kebab(metadata.type)}/{metadata.slug}-options.json", "w") as options_file:
-            options_file.write(json.dumps(transform_options(metadata.options), indent=2))
+    if component.type == 'extensionPack':
+        components['extensionPacks'].append(
+            write_template("extension-pack.jinja2", f"docs/{camel_to_kebab(component.type)}", f"{component.slug}.md",
+                           component))
 
-        for event_type in metadata.eventTypes:
-            with open(f"docs/{camel_to_kebab(metadata.type)}/{metadata.slug}-{event_type.name}-options.json",
-                      "w") as options_file:
-                options_file.write(json.dumps(transform_options(event_type.options), indent=2))
+    if component.type == 'pipeline':
+        components['pipelines'].append(
+            write_template("pipeline.j2", f"docs/{camel_to_kebab(component.type)}", f"{component.slug}.md", component))
 
-    if metadata.type == 'modelRuntime':
-        write_template("model-runtime.j2", f"docs/{camel_to_kebab(metadata.type)}", f"{metadata.slug}.md", metadata)
-        components['modelRuntimes'].append(f"{metadata.slug}")
+    if component.type == 'taxonomy':
+        components['taxonomies'].append(
+            write_template("taxonomy.jinja2", f"docs/{camel_to_kebab(component.type)}", f"{component.slug}.md",
+                           component))
+
+    if component.type == 'assistant':
+        print(component)
+        components['assistantDefinitions'].append(
+            write_template("assistant.jinja2", f"docs/{camel_to_kebab(component.type)}", f"{component.slug}.md",
+                           component))
+
+    if component.type == 'modelRuntime':
+        components['modelRuntimes'].append(
+            write_template("model-runtime.jinja2", f"docs/{camel_to_kebab(component.type)}", f"{component.slug}.md",
+                           component))
 
     if 'services' in metadata:
         for service in metadata['services']:
@@ -230,7 +162,7 @@ def document_component(metadata):
     return components
 
 
-def write_template(template, output_location, output_filename, service):
+def write_template(template, output_location, output_filename, component):
     """
     Write the given template out to a file
 
@@ -238,17 +170,15 @@ def write_template(template, output_location, output_filename, service):
       template: the name of the template
       output_location: the location to write the output
       output_filename: the name of the output file
-      service: the service metadata
-      options: the options for the service
-
+      component: the component metadata
     """
-    if service is None:
-        service = {}
     template = get_template_env().get_template(template)
-    from kodexa.model.objects import Option
-    processed_template = template.render({"service": service})
+    processed_template = template.render({"component": component})
 
     from pathlib import Path
     Path(output_location).mkdir(parents=True, exist_ok=True)
     with open(output_location + "/" + output_filename, "w") as text_file:
         text_file.write(processed_template)
+
+    return {'metadata': component,
+            'path': f"{camel_to_kebab(component.type)}/{component.slug}.md"}
