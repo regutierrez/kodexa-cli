@@ -137,7 +137,6 @@ def document_component(metadata):
                            component))
 
     if component.type == 'assistant':
-        print(component)
         components['assistantDefinitions'].append(
             write_template("assistant.jinja2", f"docs/{camel_to_kebab(component.type)}", f"{component.slug}.md",
                            component))
