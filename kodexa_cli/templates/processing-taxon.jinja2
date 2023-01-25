@@ -1,4 +1,5 @@
-{%- for child_taxon in taxon.children -%}
+{%- if children and children is iterable  %}
+{%- for child_taxon in children -%}
 
 ### 🏷️ {{ child_taxon.label }}
 
@@ -13,8 +14,10 @@ This taxon has the following options:
 {% endwith %}
 {% endif %}
 
-{%- if child_taxon.children -%}
+{%- if child_taxon.children and child_taxon.children is iterable -%}
+{% with children=child_taxon.children %}
 {% include 'processing-taxon.jinja2' %}
+{% endwith %}
 {%- endif %}
 {% endfor %}
-
+{%- endif %}

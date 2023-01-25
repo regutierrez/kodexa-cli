@@ -609,14 +609,14 @@ format-nongpl = ["idna", "jsonpointer (>1.13)", "rfc3339-validator", "rfc3986-va
 
 [[package]]
 name = "kodexa"
-version = "6.0.156"
+version = "6.0.160"
 description = "Python SDK for the Kodexa Platform"
 category = "main"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "kodexa-6.0.156-py3-none-any.whl", hash = "sha256:2121bd7d55b45c036dc8d19d3dfb0fd1e4c8978ed2d0a1f76c95475bf8f522ab"},
-    {file = "kodexa-6.0.156.tar.gz", hash = "sha256:2e0c8849acbda7bd9fbce61c9fe978a1cb60f1a54e871ec01a0a74a9a5c2b247"},
+    {file = "kodexa-6.0.160-py3-none-any.whl", hash = "sha256:852f56c4ba9b960685ade5eaafdb032ccc9d276d287bbb3c5e3e3feb779e7e0f"},
+    {file = "kodexa-6.0.160.tar.gz", hash = "sha256:c47dddd78d6f7081188438f4a85f58a7b447867b14038745e9305d4607ac0ccd"},
 ]
 
 [package.dependencies]
@@ -1106,14 +1106,14 @@ test = ["hypothesis (>=5.5.3)", "pytest (>=6.0)", "pytest-xdist (>=1.31)"]
 
 [[package]]
 name = "pathspec"
-version = "0.10.3"
+version = "0.11.0"
 description = "Utility library for gitignore style pattern matching of file paths."
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "pathspec-0.10.3-py3-none-any.whl", hash = "sha256:3c95343af8b756205e2aba76e843ba9520a24dd84f68c22b9f93251507509dd6"},
-    {file = "pathspec-0.10.3.tar.gz", hash = "sha256:56200de4077d9d0791465aa9095a01d421861e405b5096955051deefd697d6f6"},
+    {file = "pathspec-0.11.0-py3-none-any.whl", hash = "sha256:3a66eb970cbac598f9e5ccb5b2cf58930cd8e3ed86d393d541eaf2d8b1705229"},
+    {file = "pathspec-0.11.0.tar.gz", hash = "sha256:64d338d4e0914e91c1792321e6907b5a593f1ab1851de7fc269557a21b30ebbc"},
 ]
 
 [[package]]

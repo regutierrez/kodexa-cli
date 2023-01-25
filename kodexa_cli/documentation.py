@@ -60,9 +60,9 @@ def generate_documentation(metadata_components):
 
     try:
         with open("mkdocs.yml", "r") as mkdocs_file:
-            mkdocs = yaml.safe_load(mkdocs_file.read())
+            mkdocs = yaml.unsafe_load(mkdocs_file.read())
     except FileNotFoundError:
-        mkdocs = {'site_name':'Docs', 'nav': []}
+        mkdocs = {'site_name': 'Docs', 'nav': []}
 
     for reference in mkdocs['nav']:
         if 'Reference' in reference:
@@ -123,15 +123,20 @@ def document_components(metadata_objects):
 
         if component.type == 'store':
 
-            component_type = 'documentStores'
             if component.store_type == 'TABLE':
-                component_type = 'dataStores'
-            if component.store_type == 'MODEL':
-                component_type = 'models'
-
-            components[component_type].append(
-                write_template("store.jinja2", f"docs/{camel_to_kebab(component.type)}", f"{component.slug}.md",
-                               component))
+                components['dataStores'].append(
+                    write_template("data-store.jinja2", f"docs/{camel_to_kebab(component.type)}",
+                                   f"{component.slug}.md",
+                                   component))
+            elif component.store_type == 'MODEL':
+                components['models'].append(
+                    write_template("model.jinja2", f"docs/{camel_to_kebab(component.type)}", f"{component.slug}.md",
+                                   component))
+            else:
+                components['documentStores'].append(
+                    write_template("document-store.jinja2", f"docs/{camel_to_kebab(component.type)}",
+                                   f"{component.slug}.md",
+                                   component))
 
         if component.type == 'projectTemplate':
             components['projectTemplates'].append(

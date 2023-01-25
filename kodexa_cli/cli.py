@@ -17,6 +17,7 @@ from getpass import getpass
 from typing import Optional
 
 import click
+import wrapt
 import yaml
 from rich import print
 
@@ -502,13 +503,29 @@ def mkdocs(_: Info, files: list[str]):
     file_pattern is the pattern to use to find the kodexa.yml files (default is **/kodexa.yml)
 
     """
+    class Loader(yaml.SafeLoader):
+        pass
+
+    def construct_undefined(self, node):
+        if isinstance(node, yaml.nodes.ScalarNode):
+            value = self.construct_scalar(node)
+        elif isinstance(node, yaml.nodes.SequenceNode):
+            value = self.construct_sequence(node)
+        elif isinstance(node, yaml.nodes.MappingNode):
+            value = self.construct_mapping(node)
+        else:
+            assert False, f"unexpected node: {node!r}"
+
+    Loader.add_constructor(None, construct_undefined)
+
     metadata_components = []
     for path in files:
         print("Processing metadata from ", path)
         if path.endswith('.json'):
             metadata_components.append(json.loads(open(path).read()))
         else:
-            metadata_components.append(yaml.safe_load(open(path).read()))
+            metadata_components.append(yaml.load(open(path).read(), Loader=Loader))
+
     from kodexa_cli.documentation import generate_documentation
     generate_documentation(metadata_components)
 
