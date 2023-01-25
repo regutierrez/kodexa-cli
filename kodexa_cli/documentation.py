@@ -44,7 +44,7 @@ def get_template_env():
     """
     cli_path = os.path.dirname(get_path())
     package_location = os.path.join(cli_path, "templates")
-    template_loader = jinja2.FileSystemLoader(searchpath=package_location)
+    template_loader = jinja2.FileSystemLoader([os.getcwd(), package_location])
     return jinja2.Environment(loader=template_loader, autoescape=True)
 
 
@@ -205,4 +205,5 @@ def write_template(template, output_location, output_filename, component):
         text_file.write(processed_template)
 
     return {'metadata': component,
+            'type_name': camel_to_kebab(component.type),
             'path': f"{camel_to_kebab(component.type)}/{component.slug}.md"}

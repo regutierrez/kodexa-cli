@@ -609,14 +609,14 @@ format-nongpl = ["idna", "jsonpointer (>1.13)", "rfc3339-validator", "rfc3986-va
 
 [[package]]
 name = "kodexa"
-version = "6.0.161"
+version = "6.0.162"
 description = "Python SDK for the Kodexa Platform"
 category = "main"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "kodexa-6.0.161-py3-none-any.whl", hash = "sha256:808e0622eca514351faca9bdcd23452e6234b86baf474de804c2aabd80d17e6f"},
-    {file = "kodexa-6.0.161.tar.gz", hash = "sha256:3b7ea184faab9167b74ecb82a1fe6f95d627a5d34d7e62c75d39b0876736811f"},
+    {file = "kodexa-6.0.162-py3-none-any.whl", hash = "sha256:19a2c68313d486d187feef3856a7cf7b912d4b8438cef2b9d5c670331fc8d59c"},
+    {file = "kodexa-6.0.162.tar.gz", hash = "sha256:0e77e94d12bd291d3e8b4235744cf51626fe6f0bf257f2c7d4fe87c7c8ef77a4"},
 ]
 
 [package.dependencies]

@@ -3,9 +3,17 @@
 
 ### 🏷️ {{ child_taxon.label }}
 
+{% if child_taxon.description %}
 {{ child_taxon.description }}
+{% endif %}
+{{ '{%' }}
+include-markdown "{{ component.slug }}/taxons/{{ child_taxon.name }}.md"
+{{ '%}' }}
+{{ '{%' }}
+include-markdown "{{ component.slug }}/taxons/{{ child_taxon.name }}-developer.md"
+{{ '%}' }}
 
-{% if child_taxon.options is defined %}
+{% if child_taxon.options and child_taxon.options|length > 0 %}
 *Options*
 
 This taxon has the following options:
