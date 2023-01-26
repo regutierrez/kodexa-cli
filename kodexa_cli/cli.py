@@ -520,11 +520,19 @@ def mkdocs(_: Info, files: list[str]):
 
     metadata_components = []
     for path in files:
-        print("Processing metadata from ", path)
+        print("Loading metadata from ", path)
         if path.endswith('.json'):
-            metadata_components.append(json.loads(open(path).read()))
+            print("Loading from json")
+            components = json.loads(open(path).read())
         else:
-            metadata_components.append(yaml.load(open(path).read(), Loader=Loader))
+            print("Loading from yaml")
+            components = yaml.load(open(path).read(), Loader=Loader)
+
+        if not isinstance(components, list):
+            components = [components]
+
+        print(f"Loaded {len(components)} from ", path)
+        metadata_components.extend(components)
 
     from kodexa_cli.documentation import generate_documentation
     generate_documentation(metadata_components)

@@ -111,8 +111,10 @@ def document_components(metadata_objects):
     client = KodexaClient()
 
     for metadata in metadata_objects:
+
         if not isinstance(metadata, dict):
             metadata = metadata.to_dict()
+        print("Processing " + metadata['name'])
 
         component = client.deserialize(metadata)
 

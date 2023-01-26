@@ -2,6 +2,6 @@
 
 ## Options
 
-{% with options=component.options %}
-    {% include 'options.jinja2' %}
+{% with options=component.metadata.options %}
+{% include 'options.jinja2' %}
 {% endwith %}

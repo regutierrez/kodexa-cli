@@ -11,6 +11,9 @@ train other models.
 
 ## Metadata
 {% if component.metadata %}
+{% if component.image_url %}
+<img src="{{ component.metadata.provider_image_url }}" style="float: right; margin-right: 10px; margin-top: -20px; padding: 25px; width: 200px; height: 200px" />
+{% endif %}
 {% if component.metadata.provider %}
 Provided By:
 [{{ component.metadata.provider }}]({{ component.metadata.provider_url }})
