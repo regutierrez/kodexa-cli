@@ -1,4 +1,4 @@
-## Content-based Labels
+## Data Structure
 
 This taxonomy is based on Taxon's which are either data or groups, these form into a hierarchical structure shown below.
 A taxonomy designed like this is there to allow you to label data that you would like to extract.
@@ -9,3 +9,11 @@ erDiagram
     {% include 'taxon.jinja2' %}
 {% endfor %}
 ```
+
+## Taxon Definitions
+
+Below is the complete heirarchy of taxons that are available in the system.
+
+{% with children=component.taxons %}
+{% include 'content-taxon.jinja2' %}
+{% endwith %}

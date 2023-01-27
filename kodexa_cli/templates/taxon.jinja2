@@ -2,7 +2,7 @@
     {%- for child_taxon in taxon.children -%}
     {%- if child_taxon.group -%}
     {{  child_taxon.name }} ||--o{ {{ taxon.name }} : contains
-    {%- with taxon=child_taxon -%}
+    {% with taxon=child_taxon %}
     {%- include 'taxon.jinja2' -%}
     {%- endwith -%}
     {%- endif -%}
