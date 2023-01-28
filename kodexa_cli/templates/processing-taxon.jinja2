@@ -1,7 +1,12 @@
 {%- if children and children is iterable  %}
 {%- for child_taxon in children -%}
 
-### <span style="color:'#{{ child_taxon.color }}'">:material-tag:</span>  {{ child_taxon.label }}
+<style>
+.{{ child_taxon.name }} {
+  color: {{ child_taxon.color }};
+}
+</style>
+### :material-tag:{ .{{ child_taxon.name }} }  {{ child_taxon.label }}
 
 {% if child_taxon.description %}
 {{ child_taxon.description }}
