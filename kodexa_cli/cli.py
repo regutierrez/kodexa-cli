@@ -141,7 +141,7 @@ def upload(_: Info, ref: str, paths: list[str], token: str, url: str):
 
     from kodexa.platform.client import DocumentStoreEndpoint
 
-    print(f"Uploading {','.join(paths)} to {ref}")
+    print(f"Uploading {len(paths)} files to {ref}\n")
     if isinstance(document_store, DocumentStoreEndpoint):
         from rich.progress import track
 
