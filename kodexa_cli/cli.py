@@ -124,27 +124,30 @@ def project(_: Info, project_id: str, token: str, url: str):
 
 @cli.command()
 @click.argument('ref', required=True)
-@click.argument('path', required=True)
+@click.argument('paths', required=True, nargs=-1)
 @click.option('--url', default=KodexaPlatform.get_url(), help='The URL to the Kodexa server')
 @click.option('--token', default=KodexaPlatform.get_access_token(), help='Access token')
 @pass_info
-def upload(_: Info, ref: str, path: str, token: str, url: str):
+def upload(_: Info, ref: str, paths: list[str], token: str, url: str):
     """
     Upload a file to the Kodexa platform.
 
     ref is the reference to the document store to upload to.
-    path is the path to the file to upload.
+    path is the path to the file to upload, it can be many files.
     """
 
     client = KodexaClient(url=url, access_token=token)
     document_store = client.get_object_by_ref('store', ref)
 
     from kodexa.platform.client import DocumentStoreEndpoint
-    if isinstance(document_store, DocumentStoreEndpoint):
-        import glob
-        for path_match in glob.glob(path):
 
-            print(f"Uploading {path_match}")
+    print(f"Uploading {','.join(paths)} to {ref}")
+    if isinstance(document_store, DocumentStoreEndpoint):
+        from rich.progress import track
+
+        for step in track(range(len(paths)), description="Uploading files"):
+            path_match = paths[step]
+
             try:
                 document_store.upload_file(path_match)
             except Exception as e:
