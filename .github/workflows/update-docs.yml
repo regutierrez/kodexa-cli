@@ -10,6 +10,14 @@ jobs:
     name: Update documentations
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
+      - name: Run Creds Scanner
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./docs
+          base: ${{ github.event.ref_name }}
+          head: HEAD
+          extra_args: --debug 
       - name: Trigger a build in docs.kodexa.com
         uses: convictional/trigger-workflow-and-wait@v1.6.1
         with:
