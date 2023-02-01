@@ -39,4 +39,33 @@ Commands:
   upload          Upload the contents of a file or directory to a Kodexa...
   version
 ```
-    
+
+## Logging into Kodexa
+
+The first thing you need to do is log into a Kodexa platform instance. You can do this by running the `login` command:
+
+```shell
+$ kodexa login
+```
+
+You will need to provide the URL of the Kodexa platform instance you want to log into. You can also provide the email
+and password for the Kodexa platform instance.
+
+Once you have successfully logged in you can see the details of the Kodexa platform instance you are logged into by
+running the `platform` command:
+
+```shell
+$ kodexa platform
+```
+
+Your personal API token will be stored in your home directory, based on your operating system it will be:
+
+
+
+* **macOS** ~/Library/Application Support/kodexa-cli
+* **Linux** ~/.local/share/kodexa-cli
+* **Windows** C:\Documents and Settings\{User}\Application Data\Local Settings\kodexa\kodexa-cli
+or C:\Documents and Settings\{User}\Application Data\kodexa\kodexa-cli
+
+This file is used to authenticate you to the Kodexa platform instance. You can also provide the API token as an
+environment variable called `KODEXA_ACCESS_TOKEN`.
