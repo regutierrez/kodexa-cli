@@ -60,8 +60,6 @@ $ kodexa platform
 
 Your personal API token will be stored in your home directory, based on your operating system it will be:
 
-
-
 * **macOS** ~/Library/Application Support/kodexa-cli
 * **Linux** ~/.local/share/kodexa-cli
 * **Windows** C:\Documents and Settings\{User}\Application Data\Local Settings\kodexa\kodexa-cli
