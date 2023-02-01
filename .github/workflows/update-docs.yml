@@ -15,7 +15,7 @@ jobs:
         uses: trufflesecurity/trufflehog@main
         with:
           path: ./docs
-          base: ${{ github.event.repository.default_branch }}
+          base: ${{ github.event.ref_name }}
           head: HEAD
           extra_args: --debug 
       - name: Trigger a build in docs.kodexa.com
