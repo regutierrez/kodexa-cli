@@ -256,7 +256,7 @@ def build_releases():
             Path(f"docs/releases/{prefix}{release['version']}-lambda.json").write_text(
                 json.dumps(release_meta))
 
-            markdown = markdown + f"""## {prefix}-{release_meta['version']}
+            markdown = markdown + f"""## {prefix}{release_meta['version']}
         
         In order to use this release in a private environment you can download the following files:
             
