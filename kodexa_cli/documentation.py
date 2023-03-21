@@ -244,24 +244,24 @@ def build_releases():
             if 'prefix' not in release:
                 prefix = ""
             else:
-                prefix = release['prefix']
+                prefix = release['prefix']+"-"
 
             if 'SENTRY_DSN' in release_meta['deployment']['environment']:
                 del release_meta['deployment']['environment']['SENTRY_DSN']
             Path(f"docs/releases/").mkdir(parents=True, exist_ok=True)
             release_meta['deployment']['deploymentType'] = 'KUBERNETES'
-            Path(f"docs/releases/{prefix}-{release['version']}-kubernetes.json").write_text(
+            Path(f"docs/releases/{prefix}{release['version']}-kubernetes.json").write_text(
                 json.dumps(release_meta))
             release_meta['deployment']['deploymentType'] = 'AWS_LAMBDA'
-            Path(f"docs/releases/{prefix}-{release['version']}-lambda.json").write_text(
+            Path(f"docs/releases/{prefix}{release['version']}-lambda.json").write_text(
                 json.dumps(release_meta))
 
             markdown = markdown + f"""## {prefix}-{release_meta['version']}
         
         In order to use this release in a private environment you can download the following files:
             
-        [Kuberneretes]({prefix}-{release['version']}-kubernetes.json)
-        [AWS Lambda]({prefix}-{release['version']}-lambda.json)
+        [Kuberneretes]({prefix}{release['version']}-kubernetes.json)
+        [AWS Lambda]({prefix}{release['version']}-lambda.json)
         
         You can then use the following commands to install.
         
