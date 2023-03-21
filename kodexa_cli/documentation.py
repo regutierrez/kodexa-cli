@@ -232,12 +232,12 @@ def build_releases():
         with open('releases.yml') as f:
             releases = yaml.load(f, Loader=yaml.FullLoader)
 
-        markdown = """
+        markdown = textwrap.dedent("""
         # Releases
         
         The following releases are available:
         
-        """
+        """)
 
         for release in releases['extensionPacks']:
             release_meta = requests.get(release['url']).json()
