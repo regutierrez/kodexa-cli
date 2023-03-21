@@ -23,7 +23,7 @@ def camel_to_kebab(s):
 
 def get_path():
     """Gets the path of the documentation
-    
+
     :return: the path of this module file
 
     Args:
@@ -36,7 +36,7 @@ def get_path():
 
 def get_template_env():
     """Get the Jinja2 template environmnet
-    
+
     :return:
 
     Args:
@@ -240,22 +240,28 @@ def build_releases():
 
         for release in releases['extensionPacks']:
             release_meta = requests.get(release['url']).json()
+
+            if 'prefix' not in release:
+                prefix = ""
+            else:
+                prefix = release['prefix']
+
             if 'SENTRY_DSN' in release_meta['deployment']['environment']:
                 del release_meta['deployment']['environment']['SENTRY_DSN']
             Path(f"docs/releases/").mkdir(parents=True, exist_ok=True)
             release_meta['deployment']['deploymentType'] = 'KUBERNETES'
-            Path(f"docs/releases/{release['version']}-kubernetes.json").write_text(
+            Path(f"docs/releases/{prefix}-{release['version']}-kubernetes.json").write_text(
                 json.dumps(release_meta))
             release_meta['deployment']['deploymentType'] = 'AWS_LAMBDA'
-            Path(f"docs/releases/{release['version']}-lambda.json").write_text(
+            Path(f"docs/releases/{prefix}-{release['version']}-lambda.json").write_text(
                 json.dumps(release_meta))
 
-            markdown = markdown + f"""## {release_meta['version']}
+            markdown = markdown + f"""## {prefix}-{release_meta['version']}
         
         In order to use this release in a private environment you can download the following files:
             
-        [Kuberneretes]({release['version']}-kubernetes.json)
-        [AWS Lambda]({release['version']}-lambda.json)
+        [Kuberneretes]({prefix}-{release['version']}-kubernetes.json)
+        [AWS Lambda]({prefix}-{release['version']}-lambda.json)
         
         You can then use the following commands to install.
         
