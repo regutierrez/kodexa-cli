@@ -2,6 +2,7 @@
 Utilities to support generating documentation based on the metadata in a kodexa.yml
 """
 import os
+import textwrap
 from pathlib import Path
 
 import jinja2
@@ -256,7 +257,7 @@ def build_releases():
             Path(f"docs/releases/{prefix}{release['version']}-lambda.json").write_text(
                 json.dumps(release_meta))
 
-            markdown = markdown + f"""## {prefix}{release_meta['version']}
+            markdown = markdown + textwrap.dedent(f"""## {prefix}{release_meta['version']}
         
         In order to use this release in a private environment you can download the following files:
             
@@ -276,7 +277,7 @@ def build_releases():
         ```shell
         curl -X POST "https://server-name/api/extensionPacks/kodexa" -H "x-access-token: xxxxxx"  -H "Content-Type: application/json" -d @{release['version']}-lambda.json
         ```
-        """
+        """)
 
         Path(f"docs/releases/releases.md").write_text(markdown)
         return True
