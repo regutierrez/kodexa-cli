@@ -330,7 +330,11 @@ def print_object_table(object_metadata, objects_endpoint, query, page, pagesize,
 
     table = Table(title=f"Listing {object_metadata['plural']}", title_style='bold blue')
     # Get column list for the referenced object
-    column_list = DEFAULT_COLUMNS[object_metadata['plural']]
+
+    if object_metadata['plural'] in DEFAULT_COLUMNS:
+        column_list = DEFAULT_COLUMNS[object_metadata['plural']]
+    else:
+        column_list = DEFAULT_COLUMNS['default']
 
     # Create column header for the table
     for col in column_list:
