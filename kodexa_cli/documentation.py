@@ -95,9 +95,6 @@ def generate_documentation(metadata_components):
 
     mkdocs['nav'].append({'Reference': new_reference})
 
-    if build_releases():
-        mkdocs['nav'].append({'Releases': 'releases/releases.md'})
-
     with open("mkdocs.yml", "w") as mkdocs_file:
         mkdocs_file.write(yaml.dump(mkdocs))
 
@@ -217,69 +214,3 @@ def write_template(template, output_location, output_filename, component):
     return {'metadata': component,
             'type_name': camel_to_kebab(component.type),
             'path': f"{camel_to_kebab(component.type)}/{component.slug}.md"}
-
-
-def build_releases():
-    """
-    Build the releases page
-    """
-    if Path('releases.yml').is_file():
-        import json
-
-        import yaml
-        import requests
-
-        with open('releases.yml') as f:
-            releases = yaml.load(f, Loader=yaml.FullLoader)
-
-        markdown = textwrap.dedent("""
-        # Releases
-        
-        The following releases are available:
-        
-        """)
-
-        for release in releases['extensionPacks']:
-            release_meta = requests.get(release['url']).json()
-
-            if 'prefix' not in release:
-                prefix = ""
-            else:
-                prefix = release['prefix']+"-"
-
-            if 'SENTRY_DSN' in release_meta['deployment']['environment']:
-                del release_meta['deployment']['environment']['SENTRY_DSN']
-            Path(f"docs/releases/").mkdir(parents=True, exist_ok=True)
-            release_meta['deployment']['deploymentType'] = 'KUBERNETES'
-            Path(f"docs/releases/{prefix}{release['version']}-kubernetes.json").write_text(
-                json.dumps(release_meta))
-            release_meta['deployment']['deploymentType'] = 'AWS_LAMBDA'
-            Path(f"docs/releases/{prefix}{release['version']}-lambda.json").write_text(
-                json.dumps(release_meta))
-
-            markdown = markdown + textwrap.dedent(f"""## {prefix}{release_meta['version']}
-        
-        In order to use this release in a private environment you can download the following files:
-            
-        [Kuberneretes]({prefix}{release['version']}-kubernetes.json)
-        [AWS Lambda]({prefix}{release['version']}-lambda.json)
-        
-        You can then use the following commands to install.
-        
-        For Kubernetes:
-        
-        ```shell
-        curl -X POST "https://server-name/api/extensionPacks/kodexa" -H "x-access-token: xxxxxx"  -H "Content-Type: application/json" -d @{release['version']}-kubernetes.json
-        ```
-        
-        For AWS Lambda:
-        
-        ```shell
-        curl -X POST "https://server-name/api/extensionPacks/kodexa" -H "x-access-token: xxxxxx"  -H "Content-Type: application/json" -d @{release['version']}-lambda.json
-        ```
-        """)
-
-        Path(f"docs/releases/releases.md").write_text(markdown)
-        return True
-    else:
-        return False
