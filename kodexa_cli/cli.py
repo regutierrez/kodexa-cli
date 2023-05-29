@@ -356,7 +356,7 @@ def print_object_table(object_metadata, objects_endpoint, query, page, pagesize,
     console = Console()
     console.print(table)
     console.print(
-        f"Page [bold]{page_of_object_endpoints.number}[/bold] of [bold]{page_of_object_endpoints.total_pages}[/bold] "
+        f"Page [bold]{page_of_object_endpoints.number + 1}[/bold] of [bold]{page_of_object_endpoints.total_pages}[/bold] "
         f"(total of {page_of_object_endpoints.total_elements} objects)")
 
 
