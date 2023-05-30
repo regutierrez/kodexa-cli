@@ -596,14 +596,14 @@ format-nongpl = ["idna", "jsonpointer (>1.13)", "rfc3339-validator", "rfc3986-va
 
 [[package]]
 name = "kodexa"
-version = "6.2.25104807008"
+version = "6.2.25121670917"
 description = "Python SDK for the Kodexa Platform"
 category = "main"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "kodexa-6.2.25104807008-py3-none-any.whl", hash = "sha256:218232479ad5785798f1fd6b96a636ca5aa91d18a6eaff063cbb24627cd9dd1d"},
-    {file = "kodexa-6.2.25104807008.tar.gz", hash = "sha256:eb16894221cca8393c7708862f9b3c7638bf6edb75b5049f44d263b147ec8748"},
+    {file = "kodexa-6.2.25121670917-py3-none-any.whl", hash = "sha256:20b386292aaead6c21c91ad57706c40070b4046fc308c3e1aefe41a241538262"},
+    {file = "kodexa-6.2.25121670917.tar.gz", hash = "sha256:4626ada936b0c6f6121f5ff1c9e4af39617f7b339666350906f58dfb0af2a7e5"},
 ]
 
 [package.dependencies]
@@ -810,14 +810,14 @@ markdown = ">=3.0.0,<4.0.0"
 
 [[package]]
 name = "mkdocs-material"
-version = "9.1.14"
+version = "9.1.15"
 description = "Documentation that simply works"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "mkdocs_material-9.1.14-py3-none-any.whl", hash = "sha256:b56a9f955ed32d38333715cbbf68ce38f683bf38610c65094fa4ef2db9f08bcd"},
-    {file = "mkdocs_material-9.1.14.tar.gz", hash = "sha256:1ae74cc5464ef2f64574d4884512efed7f4db386fb9bc6af20fd427d7a702f49"},
+    {file = "mkdocs_material-9.1.15-py3-none-any.whl", hash = "sha256:b49e12869ab464558e2dd3c5792da5b748a7e0c48ee83b4d05715f98125a7a39"},
+    {file = "mkdocs_material-9.1.15.tar.gz", hash = "sha256:8513ab847c9a541ed3d11a3a7eed556caf72991ee786c31c5aac6691a121088a"},
 ]
 
 [package.dependencies]
@@ -1663,14 +1663,14 @@ jupyter = ["ipywidgets (>=7.5.1,<9)"]
 
 [[package]]
 name = "ruamel-yaml"
-version = "0.17.28"
+version = "0.17.30"
 description = "ruamel.yaml is a YAML parser/emitter that supports roundtrip preservation of comments, seq/map flow style, and map key order"
 category = "main"
 optional = false
 python-versions = ">=3"
 files = [
-    {file = "ruamel.yaml-0.17.28-py3-none-any.whl", hash = "sha256:823aff68f88260805049d6a4825e36cb7f1e273a7dd8f391e7b35a16a67a30ea"},
-    {file = "ruamel.yaml-0.17.28.tar.gz", hash = "sha256:3bf6df1c481d2463a633be6ee86e8aece941bb3298a9a0cd6d0865f47b1ddce6"},
+    {file = "ruamel.yaml-0.17.30-py3-none-any.whl", hash = "sha256:b73821c1e0a9daa459e215db7c4d6d23d7159fb61c4c536653a2b4fb5b8d08a7"},
+    {file = "ruamel.yaml-0.17.30.tar.gz", hash = "sha256:7e47a3d9ccfa2e41d353e6615661308bcbbc2ebad393bdc13b725bac15baf8a9"},
 ]
 
 [package.dependencies]
