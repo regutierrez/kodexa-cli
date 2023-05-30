@@ -628,57 +628,62 @@ def version(_: Info):
 
 @cli.command()
 @click.option('--path', default=os.getcwd(), help='Path to folder container kodexa.yml (defaults to current)')
-@click.option('--filename', default=None, help='Filename of the kodexa.yml (defaults to kodexa.yml)')
 @click.option('--output', default=os.getcwd() + "/dist",
               help='Path to the output folder (defaults to dist under current)')
 @click.option('--version', default=os.getenv('VERSION'), help='Version number (defaults to 1.0.0)')
+@click.argument('files', nargs=-1, type=list[str])
 @pass_info
-def package(_: Info, path: str, output: str, version: str, filename: Optional[str] = None):
+def package(_: Info, path: str, output: str, version: str, files: list[str] = None, filename: Optional[str] = None):
     """
     Package an extension pack based on the kodexa.yml file
     """
-    metadata_obj = MetadataHelper.load_metadata(path,filename)
 
-    print("Preparing to pack")
-    try:
-        os.makedirs(output)
-    except OSError as e:
-        import errno
-        if e.errno != errno.EEXIST:
-            raise
+    if files is None:
+        files = ['kodexa.yml']
 
-    metadata_obj['version'] = version if version is not None else '1.0.0'
+    for file in files:
+        metadata_obj = MetadataHelper.load_metadata(path, file)
 
-    def build_json():
-        versioned_metadata = os.path.join(output, f"{metadata_obj['slug']}-{metadata_obj['version']}.json")
-        unversioned_metadata = os.path.join(output, "kodexa.json")
-        with open(versioned_metadata, 'w') as outfile:
-            json.dump(metadata_obj, outfile)
+        print("Preparing to pack")
+        try:
+            os.makedirs(output)
+        except OSError as e:
+            import errno
+            if e.errno != errno.EEXIST:
+                raise
 
-        copyfile(versioned_metadata, unversioned_metadata)
+        metadata_obj['version'] = version if version is not None else '1.0.0'
 
-    if 'type' not in metadata_obj:
-        metadata_obj['type'] = 'extensionPack'
+        def build_json():
+            versioned_metadata = os.path.join(output, f"{metadata_obj['slug']}-{metadata_obj['version']}.json")
+            unversioned_metadata = os.path.join(output, "kodexa.json")
+            with open(versioned_metadata, 'w') as outfile:
+                json.dump(metadata_obj, outfile)
 
-    if metadata_obj['type'] == 'extensionPack':
-        if 'source' in metadata_obj and 'location' in metadata_obj['source']:
-            metadata_obj['source']['location'] = metadata_obj['source']['location'].format(**metadata_obj)
-        build_json()
+            copyfile(versioned_metadata, unversioned_metadata)
 
-        print("Extension pack has been packaged :tada:")
+        if 'type' not in metadata_obj:
+            metadata_obj['type'] = 'extensionPack'
 
-    elif metadata_obj['type'].upper() == 'STORE' and metadata_obj['storeType'].upper() == 'MODEL':
-        model_content_metadata = ModelContentMetadata.parse_obj(metadata_obj['metadata'])
-        build_json()
+        if metadata_obj['type'] == 'extensionPack':
+            if 'source' in metadata_obj and 'location' in metadata_obj['source']:
+                metadata_obj['source']['location'] = metadata_obj['source']['location'].format(**metadata_obj)
+            build_json()
 
-        # This will create the training.zip - we will then need to change the filename
-        ModelStoreEndpoint.build_implementation_zip(model_content_metadata)
-        versioned_implementation = os.path.join(output, f"{metadata_obj['slug']}-{metadata_obj['version']}.zip")
-        copyfile('implementation.zip', versioned_implementation)
+            print("Extension pack has been packaged :tada:")
 
-        # Delete the implementation
-        os.remove('implementation.zip')
-        print("Model has been packaged :tada:")
+        elif metadata_obj['type'].upper() == 'STORE' and metadata_obj['storeType'].upper() == 'MODEL':
+            model_content_metadata = ModelContentMetadata.parse_obj(metadata_obj['metadata'])
+            build_json()
 
-    else:
-        print("We don't know how to package this type of metadata")
+            # This will create the training.zip - we will then need to change the filename
+            ModelStoreEndpoint.build_implementation_zip(model_content_metadata)
+            versioned_implementation = os.path.join(output, f"{metadata_obj['slug']}-{metadata_obj['version']}.zip")
+            copyfile('implementation.zip', versioned_implementation)
+
+            # Delete the implementation
+            os.remove('implementation.zip')
+            print("Model has been packaged :tada:")
+
+        else:
+            print("We don't know how to package this type of metadata")
