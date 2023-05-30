@@ -27,7 +27,7 @@ from rich import print
 logging.root.addHandler(logging.StreamHandler(sys.stdout))
 
 from kodexa import KodexaClient
-from kodexa.platform.kodexa import ExtensionHelper, KodexaPlatform
+from kodexa.platform.kodexa import KodexaPlatform
 
 LOGGING_LEVELS = {
     0: logging.NOTSET,
