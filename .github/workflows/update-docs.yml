@@ -23,7 +23,7 @@ jobs:
         with:
           owner: kodexa-ai
           repo: docs.kodexa.com
-          github_token: ${{ secrets.GH_PAGES_TOKEN }}
+          github_token: ${{ secrets.WORKFLOW_GITHUB_TOKEN_FOR_DOCS }}
           github_user: pdodds
           workflow_file_name: documentation-deploy.yml
           ref: main
