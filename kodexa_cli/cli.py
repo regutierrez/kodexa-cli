@@ -667,7 +667,7 @@ def package(_: Info, path: str, output: str, version: str, filename: Optional[st
 
         print("Extension pack has been packaged :tada:")
 
-    elif metadata_obj['type'] == 'STORE' and metadata_obj['storeType'] == 'MODEL':
+    elif metadata_obj['type'].upper() == 'STORE' and metadata_obj['storeType'].upper() == 'MODEL':
         model_content_metadata = ModelContentMetadata.parse_obj(metadata_obj['metadata'])
         build_json()
 
@@ -681,4 +681,4 @@ def package(_: Info, path: str, output: str, version: str, filename: Optional[st
         print("Model has been packaged :tada:")
 
     else:
-        print("[RED]We don't know how to package this type of metadata[/RED]")
+        print("We don't know how to package this type of metadata")
