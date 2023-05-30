@@ -78,9 +78,12 @@ class MetadataHelper:
     """ """
 
     @staticmethod
-    def load_metadata(path) -> dict:
+    def load_metadata(path, filename: Optional[str]) -> dict:
 
-        if os.path.exists(os.path.join(path, 'dharma.json')):
+        if filename is not None:
+            dharma_metadata_file = open(os.path.join(path, filename))
+            dharma_metadata = json.loads(dharma_metadata_file.read())
+        elif os.path.exists(os.path.join(path, 'dharma.json')):
             dharma_metadata_file = open(os.path.join(path, 'dharma.json'))
             dharma_metadata = json.loads(dharma_metadata_file.read())
         elif os.path.exists(os.path.join(path, 'dharma.yml')):
@@ -622,15 +625,16 @@ def version(_: Info):
 
 @cli.command()
 @click.option('--path', default=os.getcwd(), help='Path to folder container kodexa.yml (defaults to current)')
+@click.option('--filename', default=None, help='Filename of the kodexa.yml (defaults to kodexa.yml)')
 @click.option('--output', default=os.getcwd() + "/dist",
               help='Path to the output folder (defaults to dist under current)')
 @click.option('--version', default=os.getenv('VERSION'), help='Version number (defaults to 1.0.0)')
 @pass_info
-def package(_: Info, path: str, output: str, version: str):
+def package(_: Info, path: str, output: str, version: str, filename: Optional[str] = None):
     """
     Package an extension pack based on the kodexa.yml file
     """
-    metadata_obj = MetadataHelper.load_metadata(path)
+    metadata_obj = MetadataHelper.load_metadata(path,filename)
 
     print("Preparing to pack")
     try:
