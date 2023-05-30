@@ -645,7 +645,6 @@ def package(_: Info, path: str, output: str, version: str, filename: Optional[st
             raise
 
     metadata_obj['version'] = version if version is not None else '1.0.0'
-    versioned_metadata = os.path.join(output, f"{metadata_obj['slug']}-{metadata_obj['version']}.json")
 
     def build_json():
         versioned_metadata = os.path.join(output, f"{metadata_obj['slug']}-{metadata_obj['version']}.json")
