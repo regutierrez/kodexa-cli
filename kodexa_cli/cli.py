@@ -82,7 +82,10 @@ class MetadataHelper:
 
         if filename is not None:
             dharma_metadata_file = open(os.path.join(path, filename))
-            dharma_metadata = json.loads(dharma_metadata_file.read())
+            if filename.endswith('.json'):
+                dharma_metadata = json.loads(dharma_metadata_file.read())
+            elif filename.endswith('.yml'):
+                dharma_metadata = yaml.safe_load(dharma_metadata_file.read())
         elif os.path.exists(os.path.join(path, 'dharma.json')):
             dharma_metadata_file = open(os.path.join(path, 'dharma.json'))
             dharma_metadata = json.loads(dharma_metadata_file.read())
