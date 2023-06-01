@@ -20,6 +20,7 @@ from shutil import copyfile
 import click
 import wrapt
 import yaml
+from functional import seq
 from kodexa.model import ModelContentMetadata
 from kodexa.platform.client import DEFAULT_COLUMNS, ModelStoreEndpoint
 from rich import print
@@ -518,11 +519,15 @@ def platform(_: Info, python: bool):
     if platform_url is not None:
         print(f"Kodexa URL: {KodexaPlatform.get_url()}")
         kodexa_version = KodexaPlatform.get_server_info()
+        print(f"Environment: {kodexa_version['environment']}")
         print(f"Version: {kodexa_version['version']}")
         print(f"Release: {kodexa_version['release']}")
+        print(f"Extension Packs:")
+        for ep in seq(kodexa_version['extensionPacks']).map(lambda x: x['ref']).list():
+            print(f"  {ep}")
         if python:
             print("\nPython example:\n\n")
-            print(f"from kodexa import *")
+            print(f"from kodexa import KodexaClient")
             print(f"client = KodexaClient('{KodexaPlatform.get_url()}', '{KodexaPlatform.get_access_token()}')")
     else:
         print("Kodexa is not logged in")
