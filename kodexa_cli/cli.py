@@ -200,8 +200,10 @@ def upload(_: Info, ref: str, paths: list[str], token: str, url: str):
 @click.option('--token', default=KodexaPlatform.get_access_token(), help='Access token')
 @click.option('--format', default=None, help='The format to input if from stdin (json, yaml)')
 @click.option('--overlay', default=None, help='A JSON or YAML file that will overlay the metadata')
+@click.argument('files', nargs=-1)
 @pass_info
-def deploy(_: Info, org: Optional[str], file: str, url: str, token: str, format=None, update: bool = False,
+def deploy(_: Info, org: Optional[str], file: str, files: list[str], url: str, token: str, format=None,
+           update: bool = False,
            version=None, overlay: Optional[str] = None, slug=None):
     """
     Deploy a component to a Kodexa platform instance from a file or stdin
@@ -210,7 +212,67 @@ def deploy(_: Info, org: Optional[str], file: str, url: str, token: str, format=
     client = KodexaClient(access_token=token, url=url)
 
     obj = None
-    if file is None:
+
+    def deploy_obj(obj):
+        if 'deployed' in obj:
+            del obj['deployed']
+
+        overlay_obj = None
+
+        if overlay is not None:
+            print("Reading overlay")
+            if overlay.endswith('yaml') or overlay.endswith('yml'):
+                overlay_obj = yaml.safe_load(sys.stdin.read())
+            elif overlay.endswith('json'):
+                overlay_obj = json.loads(sys.stdin.read())
+            else:
+                raise Exception("Unable to determine the format of the overlay file, must be .json or .yml/.yaml")
+
+        if isinstance(obj, list):
+            print(f"Found {len(obj)} components")
+            for o in obj:
+
+                if overlay_obj:
+                    o = merge(o, overlay_obj)
+
+                component = client.deserialize(o)
+                if org is not None:
+                    component.org_slug = org
+                print(f"Deploying component {component.slug}:{component.version}")
+                component.deploy(update=update)
+
+        else:
+
+            if overlay_obj:
+                obj = merge(obj, overlay_obj)
+
+            component = client.deserialize(obj)
+
+            if version is not None:
+                component.version = version
+            if slug is not None:
+                component.slug = slug
+            if org is not None:
+                component.org_slug = org
+            print(f"Deploying component {component.slug}:{component.version}")
+            log_details = component.deploy(update=update)
+            for log_detail in log_details:
+                print(log_detail)
+
+    if files is not None:
+        print("Reading from files", files)
+        obj = {}
+        for file in files:
+            with open(file, 'r') as f:
+                if file.lower().endswith('.json'):
+                    obj.update(json.load(f))
+                elif file.lower().endswith('.yaml') or file.lower().endswith('.yml'):
+                    obj.update(yaml.safe_load(f))
+                else:
+                    raise Exception("Unsupported file type")
+
+                deploy_obj(obj)
+    elif file is None:
         print("Reading from stdin")
         if format == 'yaml' or format == 'yml':
             obj = yaml.safe_load(sys.stdin.read())
@@ -218,6 +280,8 @@ def deploy(_: Info, org: Optional[str], file: str, url: str, token: str, format=
             obj = json.loads(sys.stdin.read())
         else:
             raise Exception("You must provide a format if using stdin")
+
+        deploy_obj(obj)
     else:
         print("Reading from file", file)
         with open(file, 'r') as f:
@@ -228,50 +292,8 @@ def deploy(_: Info, org: Optional[str], file: str, url: str, token: str, format=
             else:
                 raise Exception("Unsupported file type")
 
-    if 'deployed' in obj:
-        del obj['deployed']
+            deploy_obj(obj)
 
-    overlay_obj = None
-
-    if overlay is not None:
-        print("Reading overlay")
-        if overlay.endswith('yaml') or overlay.endswith('yml'):
-            overlay_obj = yaml.safe_load(sys.stdin.read())
-        elif overlay.endswith('json'):
-            overlay_obj = json.loads(sys.stdin.read())
-        else:
-            raise Exception("Unable to determine the format of the overlay file, must be .json or .yml/.yaml")
-
-    if isinstance(obj, list):
-        print(f"Found {len(obj)} components")
-        for o in obj:
-
-            if overlay_obj:
-                o = merge(o, overlay_obj)
-
-            component = client.deserialize(o)
-            if org is not None:
-                component.org_slug = org
-            print(f"Deploying component {component.slug}:{component.version}")
-            component.deploy(update=update)
-
-    else:
-
-        if overlay_obj:
-            obj = merge(obj, overlay_obj)
-
-        component = client.deserialize(obj)
-
-        if version is not None:
-            component.version = version
-        if slug is not None:
-            component.slug = slug
-        if org is not None:
-            component.org_slug = org
-        print(f"Deploying component {component.slug}:{component.version}")
-        log_details = component.deploy(update=update)
-        for log_detail in log_details:
-            print(log_detail)
     print("Deployed :tada:")
 
 
