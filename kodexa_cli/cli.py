@@ -517,7 +517,6 @@ def platform(_: Info, python: bool):
 
     if platform_url is not None:
         print(f"Kodexa URL: {KodexaPlatform.get_url()}")
-        print(f"Access Token: {KodexaPlatform.get_access_token()}")
         kodexa_version = KodexaPlatform.get_server_info()
         print(f"Version: {kodexa_version['version']}")
         print(f"Release: {kodexa_version['release']}")
