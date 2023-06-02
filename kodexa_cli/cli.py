@@ -261,8 +261,9 @@ def deploy(_: Info, org: Optional[str], file: str, files: list[str], url: str, t
 
     if files is not None:
         print("Reading from files", files)
-        obj = {}
+
         for file in files:
+            obj = {}
             with open(file, 'r') as f:
                 if file.lower().endswith('.json'):
                     obj.update(json.load(f))
