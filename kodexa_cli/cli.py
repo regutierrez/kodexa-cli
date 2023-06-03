@@ -660,12 +660,12 @@ def version(_: Info):
 @click.option('--version', default=os.getenv('VERSION'), help='Version number (defaults to 1.0.0)')
 @click.argument('files', nargs=-1, type=list[str])
 @pass_info
-def package(_: Info, path: str, output: str, version: str, files: list[str] = None, filename: Optional[str] = None):
+def package(_: Info, path: str, output: str, version: str, files: list[str] = None):
     """
     Package an extension pack based on the kodexa.yml file
     """
 
-    if files is None:
+    if files is None or len(files) == 0:
         files = ['kodexa.yml']
 
     for file in files:
