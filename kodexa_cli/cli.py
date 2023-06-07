@@ -22,7 +22,7 @@ import wrapt
 import yaml
 from functional import seq
 from kodexa.model import ModelContentMetadata
-from kodexa.platform.client import DEFAULT_COLUMNS, ModelStoreEndpoint
+from kodexa.platform.client import ModelStoreEndpoint
 from rich import print
 
 logging.root.addHandler(logging.StreamHandler(sys.stdout))
@@ -37,6 +37,56 @@ LOGGING_LEVELS = {
     3: logging.INFO,
     4: logging.DEBUG,
 }  #: a mapping of `verbose` option counts to logging levels
+
+DEFAULT_COLUMNS = {
+    'extensionPacks': [
+        'ref',
+        'name',
+        'description',
+        'type',
+        'status'
+    ],
+    'projects': [
+        'id',
+        'organization.name',
+        'name',
+        'description'
+    ],
+    'assistants': [
+        'ref',
+        'name',
+        'description',
+        'template'
+    ],
+    'executions': [
+        'id',
+        'startDate',
+        'endDate',
+        'status',
+        'assistant.name',
+        'documentFamily.path'
+    ],
+    'memberships': [
+        'organization.slug',
+        'organization.name'
+    ],
+
+    'stores': [
+        'ref',
+        'name',
+        'description',
+        'store_type',
+        'store_purpose',
+        'template'
+    ],
+    'default': [
+        'ref',
+        'name',
+        'description',
+        'type',
+        'template'
+    ]
+}
 
 
 class Info(object):
@@ -122,34 +172,6 @@ def cli(info: Info, verbose: int):
             )
         )
     info.verbose = verbose
-
-
-@cli.command
-@click.argument('project_id', required=True)
-@click.option('--url', default=KodexaPlatform.get_url(), help='The URL to the Kodexa server')
-@click.option('--token', default=KodexaPlatform.get_access_token(), help='Access token')
-@pass_info
-def project(_: Info, project_id: str, token: str, url: str):
-    """
-    Get details for a specific project.
-
-    project_id is the ID of the project to get details for.
-
-    """
-
-    client = KodexaClient(url=url, access_token=token)
-    project_instance = client.get_project(project_id)
-    print(f"Name: [bold]{project_instance.name}[/bold]")
-    print(f"Description: [bold]{project_instance.description}[/bold]\n")
-
-    print("[bold]Document Stores[/bold]")
-    project_instance.document_stores.print_table()
-    print("[bold]Data Stores[/bold]")
-    project_instance.data_stores.print_table()
-    print("[bold]Data Structures[/bold]")
-    project_instance.taxonomies.print_table()
-    print("[bold]Assistants[/bold]")
-    project_instance.assistants.print_table()
 
 
 @cli.command()
