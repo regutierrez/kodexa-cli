@@ -367,9 +367,10 @@ def get(_: Info, object_type: str, ref: Optional[str], url: str, token: str, que
             object_instance = objects_endpoint.get(ref)
             from rich.syntax import Syntax
             if format == 'json':
-                print(Syntax(object_instance.json(indent=4), "json"))
+                print(Syntax(object_instance.json(indent=4, exclude={'client'}, by_alias=True), "json"))
             elif format == 'yaml':
-                print(Syntax(object_instance.yaml(indent=4), "yaml"))
+                object_dict = object_instance.to_dict()
+                print(Syntax(yaml.dump(object_dict, indent=4), "yaml"))
         else:
             # objects_endpoint.print_table(query=query, page=page, page_size=pagesize, sort=sort)
             print_object_table(object_metadata, objects_endpoint, query, page, pagesize, sort)
@@ -381,9 +382,10 @@ def get(_: Info, object_type: str, ref: Optional[str], url: str, token: str, que
                 object_instance = client.get_object_by_ref(object_metadata['plural'], ref)
                 from rich.syntax import Syntax
                 if format == 'json':
-                    print(Syntax(object_instance.json(indent=4), "json"))
+                    print(Syntax(object_instance.json(indent=4, exclude={'client'}, by_alias=True), "json"))
                 elif format == 'yaml' or not format:
-                    print(Syntax(object_instance.yaml(indent=4), "yaml"))
+                    object_dict = object_instance.to_dict()
+                    print(Syntax(yaml.dump(object_dict, indent=4), "yaml"))
             else:
 
                 organization = client.organizations.find_by_slug(ref)
