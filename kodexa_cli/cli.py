@@ -736,7 +736,7 @@ def package(_: Info, path: str, output: str, version: str, files: list[str] = No
                     chart_yaml = yaml.safe_load(stream)
                     chart_yaml['version'] = metadata_obj['version']
                     chart_yaml['appVersion'] = metadata_obj['version']
-                    chart_yaml['name'] = "extension-"+metadata_obj['slug']
+                    chart_yaml['name'] = "extension-meta-"+metadata_obj['slug']
                     with open(f'{os.path.dirname(get_path())}/charts/extension-pack/Chart.yaml', 'w') as stream:
                         yaml.safe_dump(chart_yaml, stream)
 
@@ -767,7 +767,7 @@ def package(_: Info, path: str, output: str, version: str, files: list[str] = No
                     chart_yaml = yaml.safe_load(stream)
                     chart_yaml['version'] = metadata_obj['version']
                     chart_yaml['appVersion'] = metadata_obj['version']
-                    chart_yaml['name'] = "extension-"+metadata_obj['slug']
+                    chart_yaml['name'] = "model-"+metadata_obj['slug']
                     with open(f'{os.path.dirname(get_path())}/charts/model/Chart.yaml', 'w') as stream:
                         yaml.safe_dump(chart_yaml, stream)
                 import subprocess
