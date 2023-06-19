@@ -4,6 +4,7 @@ metadata:
   name: {{ include "extension-pack.fullname" . }}
   labels:
     app: kodexa
+    resource: extension-pack
 data:
   extension.json: |-
     {{ .Files.Get "resources/extension.json" | indent 4}}
