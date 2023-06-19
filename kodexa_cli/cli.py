@@ -25,6 +25,8 @@ from kodexa.model import ModelContentMetadata
 from kodexa.platform.client import ModelStoreEndpoint
 from rich import print
 
+from kodexa_cli.documentation import get_path
+
 logging.root.addHandler(logging.StreamHandler(sys.stdout))
 
 from kodexa import KodexaClient
@@ -682,9 +684,10 @@ def version(_: Info):
 @click.option('--output', default=os.getcwd() + "/dist",
               help='Path to the output folder (defaults to dist under current)')
 @click.option('--version', default=os.getenv('VERSION'), help='Version number (defaults to 1.0.0)')
-@click.argument('files', nargs=-1, type=list[str])
+@click.option('--helm/--no-helm', default=False, help='Generate a helm chart')
+@click.argument('files', nargs=-1)
 @pass_info
-def package(_: Info, path: str, output: str, version: str, files: list[str] = None):
+def package(_: Info, path: str, output: str, version: str, files: list[str] = None, helm: bool = False):
     """
     Package an extension pack based on the kodexa.yml file
     """
@@ -704,10 +707,10 @@ def package(_: Info, path: str, output: str, version: str, files: list[str] = No
                 raise
 
         metadata_obj['version'] = version if version is not None else '1.0.0'
+        unversioned_metadata = os.path.join(output, "kodexa.json")
 
         def build_json():
             versioned_metadata = os.path.join(output, f"{metadata_obj['slug']}-{metadata_obj['version']}.json")
-            unversioned_metadata = os.path.join(output, "kodexa.json")
             with open(versioned_metadata, 'w') as outfile:
                 json.dump(metadata_obj, outfile)
 
@@ -721,6 +724,27 @@ def package(_: Info, path: str, output: str, version: str, files: list[str] = No
                 metadata_obj['source']['location'] = metadata_obj['source']['location'].format(**metadata_obj)
             build_json()
 
+            if helm:
+                # We will generate a helm chart using a template chart using the JSON we just created
+                import subprocess
+                unversioned_metadata = os.path.join(output, "kodexa.json")
+                copyfile(unversioned_metadata,
+                         f'{os.path.dirname(get_path())}/charts/extension-pack/resources/extension.json')
+
+                # We need to update the extension pack chart with the version
+                with open(f'{os.path.dirname(get_path())}/charts/extension-pack/Chart.yaml', 'r') as stream:
+                    chart_yaml = yaml.safe_load(stream)
+                    chart_yaml['version'] = metadata_obj['version']
+                    chart_yaml['appVersion'] = metadata_obj['version']
+                    chart_yaml['name'] = "extension-"+metadata_obj['slug']
+                    with open(f'{os.path.dirname(get_path())}/charts/extension-pack/Chart.yaml', 'w') as stream:
+                        yaml.safe_dump(chart_yaml, stream)
+
+                subprocess.check_call(
+                    ['helm', 'package', f'{os.path.dirname(get_path())}/charts/extension-pack', '--version',
+                     metadata_obj['version'], '--app-version', metadata_obj['version'], '--destination',
+                     output])
+
             print("Extension pack has been packaged :tada:")
 
         elif metadata_obj['type'].upper() == 'STORE' and metadata_obj['storeType'].upper() == 'MODEL':
@@ -731,6 +755,26 @@ def package(_: Info, path: str, output: str, version: str, files: list[str] = No
             ModelStoreEndpoint.build_implementation_zip(model_content_metadata)
             versioned_implementation = os.path.join(output, f"{metadata_obj['slug']}-{metadata_obj['version']}.zip")
             copyfile('implementation.zip', versioned_implementation)
+
+            if helm:
+                # We will generate a helm chart using a template chart using the JSON we just created
+                copyfile(unversioned_metadata,
+                         f'{os.path.dirname(get_path())}/charts/model/resources/model.json')
+                copyfile('implementation.zip', f'{os.path.dirname(get_path())}/charts/model/resources/model.zip')
+
+                # We need to update the extension pack chart with the version
+                with open(f'{os.path.dirname(get_path())}/charts/model/Chart.yaml', 'r') as stream:
+                    chart_yaml = yaml.safe_load(stream)
+                    chart_yaml['version'] = metadata_obj['version']
+                    chart_yaml['appVersion'] = metadata_obj['version']
+                    chart_yaml['name'] = "extension-"+metadata_obj['slug']
+                    with open(f'{os.path.dirname(get_path())}/charts/model/Chart.yaml', 'w') as stream:
+                        yaml.safe_dump(chart_yaml, stream)
+                import subprocess
+                subprocess.check_call(
+                    ['helm', 'package', f'{os.path.dirname(get_path())}/charts/model', '--version',
+                     metadata_obj['version'], '--app-version', metadata_obj['version'], '--destination',
+                     output])
 
             # Delete the implementation
             os.remove('implementation.zip')
