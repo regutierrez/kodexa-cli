@@ -8,3 +8,5 @@ metadata:
 data:
   extension.json: |-
     {{ .Files.Get "resources/extension.json" | indent 4}}
+  deployment: |-
+    {{ .Values.deployment | toYaml | indent 4}}
