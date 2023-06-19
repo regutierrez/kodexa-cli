@@ -128,3 +128,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 /.idea/
+/kodexa_cli/charts/extension-pack/resources/extension.json
+/kodexa_cli/charts/model/resources/model.zip
+/kodexa_cli/charts/model/resources/model.json
