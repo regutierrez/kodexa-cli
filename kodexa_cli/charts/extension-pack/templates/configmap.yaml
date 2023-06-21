@@ -4,9 +4,10 @@ metadata:
   name: {{ include "extension-pack.fullname" . }}
   labels:
     app: kodexa
-    resource: extension-pack
+    kodexa-type: extension-pack
 data:
-  extension.json: |-
+  orgSlug: "{{ .Values.orgSlug }}"
+  extension-pack.json: |-
     {{ .Files.Get "resources/extension.json" | indent 4}}
   deployment: |-
     {{ .Values.deployment | toYaml | indent 4}}

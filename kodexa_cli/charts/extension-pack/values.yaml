@@ -1,5 +1,6 @@
 nameOverride: ""
 fullnameOverride: ""
+orgSlug: kodexa
 deployment:
   maxReplicas: 1
   minReplicas: 0

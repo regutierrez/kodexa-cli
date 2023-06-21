@@ -4,8 +4,9 @@ metadata:
   name: {{ include "model.fullname" . }}-configmap
   labels:
     app: kodexa
-    resource: model
+    kodexa-type: model
 data:
+  orgSlug: "{{ .Values.orgSlug }}"
   model.json: |-
     {{ .Files.Get "resources/model.json" | indent 4}}
   model.zip: |-
