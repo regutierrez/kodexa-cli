@@ -8,6 +8,6 @@ metadata:
 data:
   orgSlug: "{{ .Values.orgSlug }}"
   extension-pack.json: |-
-    {{ .Files.Get "resources/extension.json" | indent 4}}
-  deployment: |-
-    {{ .Values.deployment | toYaml | indent 4}}
+    {{ .Files.Get "resources/extension.json" }}
+  deployment.json: |-
+    {{ .Values.deployment | toJson }}
