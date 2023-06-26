@@ -3,6 +3,7 @@ kind: Service
 metadata:
   name: {{ include "resource-pack.fullname" . }}
   labels:
+    kodexa-type: resource-pack
     {{- include "resource-pack.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
