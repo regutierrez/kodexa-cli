@@ -2,7 +2,7 @@ affinity: {}
 fullnameOverride: ''
 image:
   pullPolicy: IfNotPresent
-  repository: kodexa/base-resources
+  repository: kodexa/base-resources-container
   tag: 1.0.0
 imagePullSecrets: []
 nameOverride: ''

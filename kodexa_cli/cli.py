@@ -803,7 +803,7 @@ def package(_: Info, path: str, output: str, version: str, files: list[str] = No
             # We need to update the extension pack chart with the version
             with open(f'{os.path.dirname(get_path())}/charts/resource-pack/values.yaml', 'r') as stream:
                 chart_yaml = yaml.safe_load(stream)
-                chart_yaml['image']['repository'] = f"{repository}/{package_name}"
+                chart_yaml['image']['repository'] = f"{repository}/{package_name}-container"
                 chart_yaml['image']['tag'] = version
                 with open(f'{os.path.dirname(get_path())}/charts/resource-pack/values.yaml', 'w') as stream:
                     yaml.safe_dump(chart_yaml, stream)
@@ -819,5 +819,5 @@ def package(_: Info, path: str, output: str, version: str, files: list[str] = No
             copyfile(f"{os.path.dirname(get_path())}/charts/resource-container/health-check.conf",
                      os.path.join(output, "health-check.conf"))
             print("\nIn order to make the resource pack available you will need to run the following commands:\n")
-            print(f"docker build -t {repository}/{package_name}:{version} .")
-            print(f"docker push {repository}/{package_name}:{version}")
+            print(f"docker build -t {repository}/{package_name}-container:{version} .")
+            print(f"docker push {repository}/{package_name}-container:{version}")
