@@ -14,6 +14,7 @@ import os.path
 import sys
 import tarfile
 from getpass import getpass
+from pathlib import Path
 from typing import Optional
 from shutil import copyfile
 
@@ -683,11 +684,14 @@ def version(_: Info):
 @click.option('--path', default=os.getcwd(), help='Path to folder container kodexa.yml (defaults to current)')
 @click.option('--output', default=os.getcwd() + "/dist",
               help='Path to the output folder (defaults to dist under current)')
+@click.option('--package-name', help='Name of the package (applicable when deploying models')
+@click.option('--repository', default='kodexa', help='Repository to use (defaults to kodexa)')
 @click.option('--version', default=os.getenv('VERSION'), help='Version number (defaults to 1.0.0)')
 @click.option('--helm/--no-helm', default=False, help='Generate a helm chart')
 @click.argument('files', nargs=-1)
 @pass_info
-def package(_: Info, path: str, output: str, version: str, files: list[str] = None, helm: bool = False):
+def package(_: Info, path: str, output: str, version: str, files: list[str] = None, helm: bool = False,
+            package_name: Optional[str] = None, repository: str = 'kodexa'):
     """
     Package an extension pack based on the kodexa.yml file
     """
@@ -695,10 +699,14 @@ def package(_: Info, path: str, output: str, version: str, files: list[str] = No
     if files is None or len(files) == 0:
         files = ['kodexa.yml']
 
+    packaged_resources = []
+
     for file in files:
         metadata_obj = MetadataHelper.load_metadata(path, file)
 
-        print("Preparing to pack")
+        if 'type' not in metadata_obj:
+            continue
+
         try:
             os.makedirs(output)
         except OSError as e:
@@ -710,11 +718,13 @@ def package(_: Info, path: str, output: str, version: str, files: list[str] = No
         unversioned_metadata = os.path.join(output, "kodexa.json")
 
         def build_json():
-            versioned_metadata = os.path.join(output, f"{metadata_obj['slug']}-{metadata_obj['version']}.json")
+            versioned_metadata = os.path.join(output,
+                                              f"{metadata_obj['type']}-{metadata_obj['slug']}-{metadata_obj['version']}.json")
             with open(versioned_metadata, 'w') as outfile:
                 json.dump(metadata_obj, outfile)
 
             copyfile(versioned_metadata, unversioned_metadata)
+            return Path(versioned_metadata).name
 
         if 'type' not in metadata_obj:
             metadata_obj['type'] = 'extensionPack'
@@ -736,7 +746,7 @@ def package(_: Info, path: str, output: str, version: str, files: list[str] = No
                     chart_yaml = yaml.safe_load(stream)
                     chart_yaml['version'] = metadata_obj['version']
                     chart_yaml['appVersion'] = metadata_obj['version']
-                    chart_yaml['name'] = "extension-meta-"+metadata_obj['slug']
+                    chart_yaml['name'] = "extension-meta-" + metadata_obj['slug']
                     with open(f'{os.path.dirname(get_path())}/charts/extension-pack/Chart.yaml', 'w') as stream:
                         yaml.safe_dump(chart_yaml, stream)
 
@@ -748,37 +758,66 @@ def package(_: Info, path: str, output: str, version: str, files: list[str] = No
             print("Extension pack has been packaged :tada:")
 
         elif metadata_obj['type'].upper() == 'STORE' and metadata_obj['storeType'].upper() == 'MODEL':
+
             model_content_metadata = ModelContentMetadata.parse_obj(metadata_obj['metadata'])
-            build_json()
+            name = build_json()
 
             # This will create the training.zip - we will then need to change the filename
             ModelStoreEndpoint.build_implementation_zip(model_content_metadata)
-            versioned_implementation = os.path.join(output, f"{metadata_obj['slug']}-{metadata_obj['version']}.zip")
+            versioned_implementation = os.path.join(output,
+                                                    f"{metadata_obj['type']}-{metadata_obj['slug']}-{metadata_obj['version']}.zip")
             copyfile('implementation.zip', versioned_implementation)
-
-            if helm:
-                # We will generate a helm chart using a template chart using the JSON we just created
-                copyfile(unversioned_metadata,
-                         f'{os.path.dirname(get_path())}/charts/model/resources/model.json')
-                copyfile('implementation.zip', f'{os.path.dirname(get_path())}/charts/model/resources/model.zip')
-
-                # We need to update the extension pack chart with the version
-                with open(f'{os.path.dirname(get_path())}/charts/model/Chart.yaml', 'r') as stream:
-                    chart_yaml = yaml.safe_load(stream)
-                    chart_yaml['version'] = metadata_obj['version']
-                    chart_yaml['appVersion'] = metadata_obj['version']
-                    chart_yaml['name'] = "model-"+metadata_obj['slug']
-                    with open(f'{os.path.dirname(get_path())}/charts/model/Chart.yaml', 'w') as stream:
-                        yaml.safe_dump(chart_yaml, stream)
-                import subprocess
-                subprocess.check_call(
-                    ['helm', 'package', f'{os.path.dirname(get_path())}/charts/model', '--version',
-                     metadata_obj['version'], '--app-version', metadata_obj['version'], '--destination',
-                     output])
 
             # Delete the implementation
             os.remove('implementation.zip')
-            print("Model has been packaged :tada:")
-
+            print("Model has been prepared")
+            packaged_resources.append(name)
         else:
-            print("We don't know how to package this type of metadata")
+            print(f"{metadata_obj['type']} has been prepared")
+            name = build_json()
+            packaged_resources.append(name)
+
+    if len(packaged_resources) > 0:
+        if helm:
+            print(
+                f"{len(packaged_resources)} resources(s) have been prepared, we now need to package them into a resource package.\n")
+
+            if package_name is None:
+                raise Exception("You must provide a package name when packaging resources")
+            if version is None:
+                raise Exception("You must provide a version when packaging resources")
+
+            # We need to create an index.json which is a json list of the resource names, versions and types
+            with open(os.path.join(output, "index.json"), "w") as index_json:
+                json.dump(packaged_resources, index_json)
+
+            # We need to update the extension pack chart with the version
+            with open(f'{os.path.dirname(get_path())}/charts/resource-pack/Chart.yaml', 'r') as stream:
+                chart_yaml = yaml.safe_load(stream)
+                chart_yaml['version'] = metadata_obj['version']
+                chart_yaml['appVersion'] = metadata_obj['version']
+                chart_yaml['name'] = package_name
+                with open(f'{os.path.dirname(get_path())}/charts/resource-pack/Chart.yaml', 'w') as stream:
+                    yaml.safe_dump(chart_yaml, stream)
+
+            # We need to update the extension pack chart with the version
+            with open(f'{os.path.dirname(get_path())}/charts/resource-pack/values.yaml', 'r') as stream:
+                chart_yaml = yaml.safe_load(stream)
+                chart_yaml['image']['repository'] = f"{repository}/{package_name}"
+                chart_yaml['image']['tag'] = version
+                with open(f'{os.path.dirname(get_path())}/charts/resource-pack/values.yaml', 'w') as stream:
+                    yaml.safe_dump(chart_yaml, stream)
+
+            import subprocess
+            subprocess.check_call(
+                ['helm', 'package', f'{os.path.dirname(get_path())}/charts/resource-pack', '--version',
+                 metadata_obj['version'], '--app-version', metadata_obj['version'], '--destination',
+                 output])
+
+            copyfile(f"{os.path.dirname(get_path())}/charts/resource-container/Dockerfile",
+                     os.path.join(output, "Dockerfile"))
+            copyfile(f"{os.path.dirname(get_path())}/charts/resource-container/health-check.conf",
+                     os.path.join(output, "health-check.conf"))
+            print("\nIn order to make the resource pack available you will need to run the following commands:\n")
+            print(f"docker build -t {repository}/{package_name}:{version} .")
+            print(f"docker push {repository}/{package_name}:{version}")
