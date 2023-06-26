@@ -13,3 +13,5 @@ replicaCount: 1
 resources: {}
 securityContext: {}
 tolerations: []
+service:
+  port: 80
