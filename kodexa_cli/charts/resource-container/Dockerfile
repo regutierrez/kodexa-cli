@@ -9,4 +9,3 @@ FROM nginx:latest
 # into the Minio instance
 
 ADD . /usr/share/nginx/html/.
-
