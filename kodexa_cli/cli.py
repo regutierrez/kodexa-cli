@@ -723,6 +723,12 @@ def package(_: Info, path: str, output: str, version: str, files: list[str] = No
             with open(versioned_metadata, 'w') as outfile:
                 json.dump(metadata_obj, outfile)
 
+            # TODO this is a legacy thing, we should remove it in the 6.3.0 release
+            versioned_metadata = os.path.join(output,
+                                              f"{metadata_obj['slug']}-{metadata_obj['version']}.json")
+            with open(versioned_metadata, 'w') as outfile:
+                json.dump(metadata_obj, outfile)
+
             copyfile(versioned_metadata, unversioned_metadata)
             return Path(versioned_metadata).name
 
