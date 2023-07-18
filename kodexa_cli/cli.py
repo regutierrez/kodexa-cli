@@ -6,20 +6,17 @@ This is the Kodexa CLI, it can be used to allow you to work with an instance of 
 
 It supports interacting with the API, listing and viewing components.  Note it can also be used to login and logout
 """
-import glob
 import json
 import logging
 import os
 import os.path
 import sys
-import tarfile
 from getpass import getpass
 from pathlib import Path
 from typing import Optional
 from shutil import copyfile
 
 import click
-import wrapt
 import yaml
 from functional import seq
 from kodexa.model import ModelContentMetadata
