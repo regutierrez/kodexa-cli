@@ -596,13 +596,13 @@ requests = ">=2.31.0,<3.0.0"
 
 [[package]]
 name = "kodexa"
-version = "6.3.35585655579"
+version = "6.3.35585850782"
 description = "Python SDK for the Kodexa Platform"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "kodexa-6.3.35585655579-py3-none-any.whl", hash = "sha256:af76bd0e843af4e9cae6f01764398db0352a6f8ed65256b99d3aba962d9dcfd9"},
-    {file = "kodexa-6.3.35585655579.tar.gz", hash = "sha256:7adee615cc5671244c0060cab395d607caa5465a601ec0318610380ac5ac88ca"},
+    {file = "kodexa-6.3.35585850782-py3-none-any.whl", hash = "sha256:019db307c0fc2e140fe7548b02a0dabd9d3dabda6ae9ae844c6de0c49ca64147"},
+    {file = "kodexa-6.3.35585850782.tar.gz", hash = "sha256:5623d0465b09cbe43b1e8f26a2abade7f4ec000b9f73c34e1158adf309da9e7a"},
 ]
 
 [package.dependencies]
@@ -619,7 +619,7 @@ pyfunctional = ">=1.4.3,<1.5.0"
 python-dateutil = ">=2.8.2,<3.0.0"
 pyyaml = ">=6.0,<7.0"
 requests = ">=2.28.1,<3.0.0"
-urllib3 = ">=2.0.3,<3.0.0"
+urllib3 = ">=1.26,<2.0"
 
 [[package]]
 name = "lazy-object-proxy"
@@ -1936,20 +1936,19 @@ files = [
 
 [[package]]
 name = "urllib3"
-version = "2.0.3"
+version = "1.26.16"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
 files = [
-    {file = "urllib3-2.0.3-py3-none-any.whl", hash = "sha256:48e7fafa40319d358848e1bc6809b208340fafe2096f1725d05d67443d0483d1"},
-    {file = "urllib3-2.0.3.tar.gz", hash = "sha256:bee28b5e56addb8226c96f7f13ac28cb4c301dd5ea8a6ca179c0b9835e032825"},
+    {file = "urllib3-1.26.16-py2.py3-none-any.whl", hash = "sha256:8d36afa7616d8ab714608411b4a3b13e58f463aee519024578e062e141dce20f"},
+    {file = "urllib3-1.26.16.tar.gz", hash = "sha256:8f135f6502756bde6b2a9b28989df5fbe87c9970cecaa69041edcce7f0589b14"},
 ]
 
 [package.extras]
-brotli = ["brotli (>=1.0.9)", "brotlicffi (>=0.8.0)"]
-secure = ["certifi", "cryptography (>=1.9)", "idna (>=2.0.0)", "pyopenssl (>=17.1.0)", "urllib3-secure-extra"]
-socks = ["pysocks (>=1.5.6,!=1.5.7,<2.0)"]
-zstd = ["zstandard (>=0.18.0)"]
+brotli = ["brotli (>=1.0.9)", "brotlicffi (>=0.8.0)", "brotlipy (>=0.6.0)"]
+secure = ["certifi", "cryptography (>=1.3.4)", "idna (>=2.0.0)", "ipaddress", "pyOpenSSL (>=0.14)", "urllib3-secure-extra"]
+socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
 name = "watchdog"
