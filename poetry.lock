@@ -596,13 +596,13 @@ requests = ">=2.31.0,<3.0.0"
 
 [[package]]
 name = "kodexa"
-version = "6.3.35585850782"
+version = "6.3.35586420712"
 description = "Python SDK for the Kodexa Platform"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "kodexa-6.3.35585850782-py3-none-any.whl", hash = "sha256:019db307c0fc2e140fe7548b02a0dabd9d3dabda6ae9ae844c6de0c49ca64147"},
-    {file = "kodexa-6.3.35585850782.tar.gz", hash = "sha256:5623d0465b09cbe43b1e8f26a2abade7f4ec000b9f73c34e1158adf309da9e7a"},
+    {file = "kodexa-6.3.35586420712-py3-none-any.whl", hash = "sha256:3050dd1b42ca585d6bc893639b8fcfbd1ae71cc711a86c734cd7d86eab9a068b"},
+    {file = "kodexa-6.3.35586420712.tar.gz", hash = "sha256:bdb5e86e349af0a094c907353feb869e3df5cccabf31e360522f435f92905419"},
 ]
 
 [package.dependencies]
@@ -619,6 +619,7 @@ pyfunctional = ">=1.4.3,<1.5.0"
 python-dateutil = ">=2.8.2,<3.0.0"
 pyyaml = ">=6.0,<7.0"
 requests = ">=2.28.1,<3.0.0"
+semver = ">=3.0.1,<4.0.0"
 urllib3 = ">=1.26,<2.0"
 
 [[package]]
@@ -1852,6 +1853,17 @@ files = [
     {file = "ruamel.yaml.clib-0.2.7-cp39-cp39-win32.whl", hash = "sha256:d5e51e2901ec2366b79f16c2299a03e74ba4531ddcfacc1416639c557aef0ad8"},
     {file = "ruamel.yaml.clib-0.2.7-cp39-cp39-win_amd64.whl", hash = "sha256:184faeaec61dbaa3cace407cffc5819f7b977e75360e8d5ca19461cd851a5fc5"},
     {file = "ruamel.yaml.clib-0.2.7.tar.gz", hash = "sha256:1f08fd5a2bea9c4180db71678e850b995d2a5f4537be0e94557668cf0f5f9497"},
+]
+
+[[package]]
+name = "semver"
+version = "3.0.1"
+description = "Python helper for Semantic Versioning (https://semver.org)"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "semver-3.0.1-py3-none-any.whl", hash = "sha256:2a23844ba1647362c7490fe3995a86e097bb590d16f0f32dfc383008f19e4cdf"},
+    {file = "semver-3.0.1.tar.gz", hash = "sha256:9ec78c5447883c67b97f98c3b6212796708191d22e4ad30f4570f840171cbce1"},
 ]
 
 [[package]]
