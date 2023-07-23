@@ -807,8 +807,8 @@ def package(_: Info, path: str, output: str, version: str, files: list[str] = No
             # We need to update the extension pack chart with the version
             with open(f'{os.path.dirname(get_path())}/charts/resource-pack/Chart.yaml', 'r') as stream:
                 chart_yaml = yaml.safe_load(stream)
-                chart_yaml['version'] = metadata_obj['version']
-                chart_yaml['appVersion'] = metadata_obj['version']
+                chart_yaml['version'] = version
+                chart_yaml['appVersion'] = version
                 chart_yaml['name'] = package_name
                 with open(f'{os.path.dirname(get_path())}/charts/resource-pack/Chart.yaml', 'w') as stream:
                     yaml.safe_dump(chart_yaml, stream)
@@ -824,7 +824,7 @@ def package(_: Info, path: str, output: str, version: str, files: list[str] = No
             import subprocess
             subprocess.check_call(
                 ['helm', 'package', f'{os.path.dirname(get_path())}/charts/resource-pack', '--version',
-                 metadata_obj['version'], '--app-version', metadata_obj['version'], '--destination',
+                 version, '--app-version', metadata_obj['version'], '--destination',
                  output])
 
             copyfile(f"{os.path.dirname(get_path())}/charts/resource-container/Dockerfile",
