@@ -6,22 +6,21 @@ This is the Kodexa CLI, it can be used to allow you to work with an instance of 
 
 It supports interacting with the API, listing and viewing components.  Note it can also be used to login and logout
 """
+import click
 import json
 import logging
 import os
 import os.path
 import sys
-from getpass import getpass
-from pathlib import Path
-from typing import Optional
-from shutil import copyfile
-
-import click
 import yaml
 from functional import seq
+from getpass import getpass
 from kodexa.model import ModelContentMetadata
 from kodexa.platform.client import ModelStoreEndpoint
+from pathlib import Path
 from rich import print
+from shutil import copyfile
+from typing import Optional
 
 from kodexa_cli.documentation import get_path
 
@@ -684,11 +683,13 @@ def version(_: Info):
 @click.option('--package-name', help='Name of the package (applicable when deploying models')
 @click.option('--repository', default='kodexa', help='Repository to use (defaults to kodexa)')
 @click.option('--version', default=os.getenv('VERSION'), help='Version number (defaults to 1.0.0)')
+@click.option('--strip-version-build', default=False,
+              help='Remove the build from the version number when packaging the resources')
 @click.option('--helm/--no-helm', default=False, help='Generate a helm chart')
 @click.argument('files', nargs=-1)
 @pass_info
 def package(_: Info, path: str, output: str, version: str, files: list[str] = None, helm: bool = False,
-            package_name: Optional[str] = None, repository: str = 'kodexa'):
+            package_name: Optional[str] = None, repository: str = 'kodexa', strip_version_build: bool = False):
     """
     Package an extension pack based on the kodexa.yml file
     """
@@ -711,7 +712,16 @@ def package(_: Info, path: str, output: str, version: str, files: list[str] = No
             if e.errno != errno.EEXIST:
                 raise
 
-        metadata_obj['version'] = version if version is not None else '1.0.0'
+        if strip_version_build:
+            if '-' in version:
+                new_version = version.split('-')[0]
+            else:
+                new_version = version
+
+            metadata_obj['version'] = new_version if new_version is not None else '1.0.0'
+        else:
+            metadata_obj['version'] = version if version is not None else '1.0.0'
+
         unversioned_metadata = os.path.join(output, "kodexa.json")
 
         def build_json():
