@@ -703,6 +703,7 @@ def package(_: Info, path: str, output: str, version: str, files: list[str] = No
         metadata_obj = MetadataHelper.load_metadata(path, file)
 
         if 'type' not in metadata_obj:
+            print("Unable to package, no type in metadata for ", file)
             continue
 
         try:
