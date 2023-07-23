@@ -705,6 +705,8 @@ def package(_: Info, path: str, output: str, version: str, files: list[str] = No
         if 'type' not in metadata_obj:
             print("Unable to package, no type in metadata for ", file)
             continue
+        
+        print("Processing ", file)
 
         try:
             os.makedirs(output)
