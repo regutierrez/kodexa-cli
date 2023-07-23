@@ -683,8 +683,8 @@ def version(_: Info):
 @click.option('--package-name', help='Name of the package (applicable when deploying models')
 @click.option('--repository', default='kodexa', help='Repository to use (defaults to kodexa)')
 @click.option('--version', default=os.getenv('VERSION'), help='Version number (defaults to 1.0.0)')
-@click.option('--strip-version-build', default=False,
-              help='Remove the build from the version number when packaging the resources')
+@click.option('--strip-version-build/--include-version-build', default=False,
+              help='Determine whether to include the build from the version number when packaging the resources')
 @click.option('--helm/--no-helm', default=False, help='Generate a helm chart')
 @click.argument('files', nargs=-1)
 @pass_info
