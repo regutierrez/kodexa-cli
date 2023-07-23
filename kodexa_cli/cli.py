@@ -783,10 +783,10 @@ def package(_: Info, path: str, output: str, version: str, files: list[str] = No
 
             # Delete the implementation
             os.remove('implementation.zip')
-            print("Model has been prepared")
+            print(f"Model has been prepared {metadata_obj['type']}-{metadata_obj['slug']}-{metadata_obj['version']}")
             packaged_resources.append(name)
         else:
-            print(f"{metadata_obj['type']} has been prepared")
+            print(f"{metadata_obj['type']}-{metadata_obj['slug']}-{metadata_obj['version']} has been prepared")
             name = build_json()
             packaged_resources.append(name)
 
