@@ -800,7 +800,8 @@ def package(_: Info, path: str, output: str, version: str, files: list[str] = No
             name = build_json()
 
             # We need to work out the parent directory
-            parent_directory = os.path.dirname(get_path())
+            parent_directory = os.path.dirname(file)
+            print("Going to build the implementation zip in", parent_directory)
             with set_directory(Path(parent_directory)):
                 # This will create the implementation.zip - we will then need to change the filename
                 ModelStoreEndpoint.build_implementation_zip(model_content_metadata)
