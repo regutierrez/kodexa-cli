@@ -6,21 +6,23 @@ This is the Kodexa CLI, it can be used to allow you to work with an instance of 
 
 It supports interacting with the API, listing and viewing components.  Note it can also be used to login and logout
 """
-import click
 import json
 import logging
 import os
 import os.path
 import sys
-import yaml
-from functional import seq
+from contextlib import contextmanager
 from getpass import getpass
-from kodexa.model import ModelContentMetadata
-from kodexa.platform.client import ModelStoreEndpoint
 from pathlib import Path
-from rich import print
 from shutil import copyfile
 from typing import Optional
+
+import click
+import yaml
+from functional import seq
+from kodexa.model import ModelContentMetadata
+from kodexa.platform.client import ModelStoreEndpoint
+from rich import print
 
 from kodexa_cli.documentation import get_path
 
@@ -86,6 +88,25 @@ DEFAULT_COLUMNS = {
         'template'
     ]
 }
+
+
+@contextmanager
+def set_directory(path: Path):
+    """Sets the cwd within the context
+
+    Args:
+        path (Path): The path to the cwd
+
+    Yields:
+        None
+    """
+
+    origin = Path().absolute()
+    try:
+        os.chdir(path)
+        yield
+    finally:
+        os.chdir(origin)
 
 
 class Info(object):
@@ -705,7 +726,7 @@ def package(_: Info, path: str, output: str, version: str, files: list[str] = No
         if 'type' not in metadata_obj:
             print("Unable to package, no type in metadata for ", file)
             continue
-        
+
         print("Processing ", file)
 
         try:
@@ -775,17 +796,21 @@ def package(_: Info, path: str, output: str, version: str, files: list[str] = No
 
         elif metadata_obj['type'].upper() == 'STORE' and metadata_obj['storeType'].upper() == 'MODEL':
 
-            model_content_metadata = ModelContentMetadata.parse_obj(metadata_obj['metadata'])
+            model_content_metadata = ModelContentMetadata.model_validate(metadata_obj['metadata'])
             name = build_json()
 
-            # This will create the training.zip - we will then need to change the filename
-            ModelStoreEndpoint.build_implementation_zip(model_content_metadata)
-            versioned_implementation = os.path.join(output,
-                                                    f"{metadata_obj['type']}-{metadata_obj['slug']}-{metadata_obj['version']}.zip")
-            copyfile('implementation.zip', versioned_implementation)
+            # We need to work out the parent directory
+            parent_directory = os.path.dirname(get_path())
+            with set_directory(Path(parent_directory)):
+                # This will create the implementation.zip - we will then need to change the filename
+                ModelStoreEndpoint.build_implementation_zip(model_content_metadata)
+                versioned_implementation = os.path.join(output,
+                                                        f"{metadata_obj['type']}-{metadata_obj['slug']}-{metadata_obj['version']}.zip")
+                copyfile('implementation.zip', versioned_implementation)
 
-            # Delete the implementation
-            os.remove('implementation.zip')
+                # Delete the implementation
+                os.remove('implementation.zip')
+
             print(f"Model has been prepared {metadata_obj['type']}-{metadata_obj['slug']}-{metadata_obj['version']}")
             packaged_resources.append(name)
         else:
