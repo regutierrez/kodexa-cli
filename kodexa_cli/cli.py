@@ -387,7 +387,7 @@ def get(_: Info, object_type: str, ref: Optional[str], url: str, token: str, que
             object_instance = objects_endpoint.get(ref)
             from rich.syntax import Syntax
             if format == 'json':
-                print(Syntax(object_instance.json(indent=4, exclude={'client'}, by_alias=True), "json"))
+                print(Syntax(json.dumps(object_instance.to_dict(), indent=4), "json"))
             elif format == 'yaml':
                 object_dict = object_instance.to_dict()
                 print(Syntax(yaml.dump(object_dict, indent=4), "yaml"))
@@ -402,7 +402,7 @@ def get(_: Info, object_type: str, ref: Optional[str], url: str, token: str, que
                 object_instance = client.get_object_by_ref(object_metadata['plural'], ref)
                 from rich.syntax import Syntax
                 if format == 'json':
-                    print(Syntax(object_instance.json(indent=4, exclude={'client'}, by_alias=True), "json"))
+                    print(Syntax(json.dumps(object_instance.to_dict(), indent=4), "json"))
                 elif format == 'yaml' or not format:
                     object_dict = object_instance.to_dict()
                     print(Syntax(yaml.dump(object_dict, indent=4), "yaml"))
