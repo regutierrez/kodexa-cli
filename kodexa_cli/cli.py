@@ -67,6 +67,7 @@ DEFAULT_COLUMNS = {
         'assistant.name',
         'documentFamily.path'
     ],
+
     'memberships': [
         'organization.slug',
         'organization.name'
@@ -79,6 +80,10 @@ DEFAULT_COLUMNS = {
         'store_type',
         'store_purpose',
         'template'
+    ],
+    'organizations': [
+        'slug',
+        'name',
     ],
     'default': [
         'ref',
