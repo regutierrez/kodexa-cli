@@ -539,13 +539,13 @@ requests = ">=2.31.0,<3.0.0"
 
 [[package]]
 name = "kodexa"
-version = "6.3.35730447811"
+version = "6.3.35730785755"
 description = "Python SDK for the Kodexa Platform"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "kodexa-6.3.35730447811-py3-none-any.whl", hash = "sha256:ea825fbeb3c1362506d31cc2fdef619b8e8c9cac4d5f17435669889a00119ecb"},
-    {file = "kodexa-6.3.35730447811.tar.gz", hash = "sha256:819b14382ba316cf40b761becea97d5c92f44b816908973701ad6b053bdb5c3a"},
+    {file = "kodexa-6.3.35730785755-py3-none-any.whl", hash = "sha256:f2aad2fdbfccd2dc730af7e481eed57bbb279af721b515de128cc6c6fb99c49c"},
+    {file = "kodexa-6.3.35730785755.tar.gz", hash = "sha256:0de601f3818cb6bc5103bb1e26dc2b79219ff2621ef61c7d989085cc8bcfd88e"},
 ]
 
 [package.dependencies]
