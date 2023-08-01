@@ -392,7 +392,6 @@ def get(_: Info, object_type: str, ref: Optional[str], url: str, token: str, que
                 object_dict = object_instance.to_dict()
                 print(Syntax(yaml.dump(object_dict, indent=4), "yaml"))
         else:
-            # objects_endpoint.print_table(query=query, page=page, page_size=pagesize, sort=sort)
             print_object_table(object_metadata, objects_endpoint, query, page, pagesize, sort)
     else:
 
@@ -409,12 +408,17 @@ def get(_: Info, object_type: str, ref: Optional[str], url: str, token: str, que
             else:
 
                 organization = client.organizations.find_by_slug(ref)
+
+                if organization is None:
+                    print(f"Could not find organization with slug {ref}")
+                    exit(1)
+
                 objects_endpoint = client.get_object_type(object_type, organization)
                 print_object_table(object_metadata, objects_endpoint, query, page, pagesize, sort)
-                # objects_endpoint.print_table(query=query, page=page, page_size=pagesize, sort=sort)
         else:
 
             print(f"You must provide a ref to get a specific object")
+            exit(1)
 
 
 def print_object_table(object_metadata, objects_endpoint, query, page, pagesize, sort):
