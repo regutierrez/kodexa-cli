@@ -138,13 +138,13 @@ files = [
 
 [[package]]
 name = "chardet"
-version = "5.1.0"
+version = "5.2.0"
 description = "Universal encoding detector for Python 3"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "chardet-5.1.0-py3-none-any.whl", hash = "sha256:362777fb014af596ad31334fde1e8c327dfdb076e1960d1694662d46a6917ab9"},
-    {file = "chardet-5.1.0.tar.gz", hash = "sha256:0d62712b956bc154f85fb0a266e2a3c5913c2967e00348701b32411d6def31e5"},
+    {file = "chardet-5.2.0-py3-none-any.whl", hash = "sha256:e1cf59446890a00105fe7b7912492ea04b6e6f06d4b742b2c788469e34c82970"},
+    {file = "chardet-5.2.0.tar.gz", hash = "sha256:1b3b6ff479a8c414bc3fa2c0852995695c4a026dcd6d0633b2dd092ca39c1cf7"},
 ]
 
 [[package]]
@@ -539,13 +539,13 @@ requests = ">=2.31.0,<3.0.0"
 
 [[package]]
 name = "kodexa"
-version = "6.3.35730785755"
+version = "6.3.35731243382"
 description = "Python SDK for the Kodexa Platform"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "kodexa-6.3.35730785755-py3-none-any.whl", hash = "sha256:f2aad2fdbfccd2dc730af7e481eed57bbb279af721b515de128cc6c6fb99c49c"},
-    {file = "kodexa-6.3.35730785755.tar.gz", hash = "sha256:0de601f3818cb6bc5103bb1e26dc2b79219ff2621ef61c7d989085cc8bcfd88e"},
+    {file = "kodexa-6.3.35731243382-py3-none-any.whl", hash = "sha256:bb7dbc6721f3dad1abdd32aa48ddf38f12088781c3c9602c74841b5785fa286c"},
+    {file = "kodexa-6.3.35731243382.tar.gz", hash = "sha256:fc1624411e73341a1390fd368bd525646e011ac30b79dc4591bb7e4762674e87"},
 ]
 
 [package.dependencies]
