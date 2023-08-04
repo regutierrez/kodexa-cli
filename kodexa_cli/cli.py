@@ -809,6 +809,7 @@ def package(_: Info, path: str, output: str, version: str, files: list[str] = No
 
             import uuid
             model_content_metadata.state_hash = str(uuid.uuid4())
+            metadata_obj['metadata'] = model_content_metadata.to_dict()
             name = build_json()
 
             # We need to work out the parent directory
