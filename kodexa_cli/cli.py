@@ -61,11 +61,11 @@ DEFAULT_COLUMNS = {
     ],
     'executions': [
         'id',
-        'startDate',
-        'endDate',
+        'start_date',
+        'end_date',
         'status',
-        'assistant.name',
-        'documentFamily.path'
+        'assistant_name',
+        'filename'
     ],
 
     'memberships': [
@@ -446,15 +446,31 @@ def print_object_table(object_metadata, objects_endpoint, query, page, pagesize,
         table.add_column(col)
 
     page_of_object_endpoints = objects_endpoint.list(query=query, page=page, page_size=pagesize, sort=sort)
+    
     # Get column values
     for objects_endpoint in page_of_object_endpoints.content:
         row = []
         for col in column_list:
-            try:
-                value = str(getattr(objects_endpoint, col))
-                row.append(value)
-            except AttributeError:
-                row.append("")
+            if col == "filename":
+                filename = ""
+                for content_object in objects_endpoint.content_objects:
+                    if content_object.metadata and "path" in content_object.metadata:
+                        filename = content_object.metadata["path"]
+                        break  # Stop searching if path is found
+                row.append(filename)
+            elif col == "assistant_name":
+                assistant_name = ""
+                if objects_endpoint.pipeline and objects_endpoint.pipeline.steps:
+                    for step in objects_endpoint.pipeline.steps:
+                        assistant_name = step.name
+                        break  # Stop searching if path is found
+                row.append(assistant_name)
+            else:
+                try:
+                    value = str(getattr(objects_endpoint, col))
+                    row.append(value)
+                except AttributeError:
+                    row.append("")
         table.add_row(*row, style='yellow')
 
     from rich.console import Console
