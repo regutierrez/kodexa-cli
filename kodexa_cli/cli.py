@@ -357,7 +357,14 @@ def logs(_: Info, execution_id: str, url: str, token: str):
     execution_id is the id of the execution to get the logs for
     """
     client = KodexaClient(url=url, access_token=token)
-    client.executions.get(execution_id).logs()
+    response = client.executions.get(execution_id).logs()
+    
+    if response.status_code == 200:  # Check if the response is successful
+        logs_data = response.json()  # Parse the JSON data from the response
+        # Print the logs using rich's print function
+        print(logs_data)
+    else:
+        print(f"Failed to retrieve logs. Status code: {response.status_code}")
 
 
 @cli.command()
@@ -445,8 +452,11 @@ def print_object_table(object_metadata, objects_endpoint, query, page, pagesize,
     for col in column_list:
         table.add_column(col)
 
-    page_of_object_endpoints = objects_endpoint.list(query=query, page=page, page_size=pagesize, sort=sort)
-    
+    try:
+        page_of_object_endpoints = objects_endpoint.list(query=query, page=page, page_size=pagesize, sort=sort)
+    except Exception as e:
+        print("e:", e)
+        raise e
     # Get column values
     for objects_endpoint in page_of_object_endpoints.content:
         row = []
