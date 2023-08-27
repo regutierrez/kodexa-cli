@@ -286,6 +286,7 @@ def deploy(_: Info, org: Optional[str], file: str, files: list[str], url: str, t
                 if org is not None:
                     component.org_slug = org
                 print(f"Deploying component {component.slug}:{component.version} to {client.get_url()}")
+                from datetime import datetime
                 start = datetime.now()
                 component.deploy(update=update)
                 from datetime import datetime
