@@ -285,8 +285,11 @@ def deploy(_: Info, org: Optional[str], file: str, files: list[str], url: str, t
                 component = client.deserialize(o)
                 if org is not None:
                     component.org_slug = org
-                print(f"Deploying component {component.slug}:{component.version}")
+                print(f"Deploying component {component.slug}:{component.version} to {client.get_url()}")
+                start = datetime.now()
                 component.deploy(update=update)
+                from datetime import datetime
+                print(f"Deployed at {datetime.now()}, took {datetime.now() - start} seconds")
 
         else:
 
@@ -307,7 +310,7 @@ def deploy(_: Info, org: Optional[str], file: str, files: list[str], url: str, t
                 print(log_detail)
 
     if files is not None:
-        print("Reading from files", files)
+        print(f"Deploying {len(files)} files")
 
         for file in files:
             obj = {}
@@ -358,7 +361,7 @@ def logs(_: Info, execution_id: str, url: str, token: str):
     """
     client = KodexaClient(url=url, access_token=token)
     response = client.executions.get(execution_id).logs()
-    
+
     if response.status_code == 200:  # Check if the response is successful
         logs_data = response.json()  # Parse the JSON data from the response
         # Print the logs using rich's print function
