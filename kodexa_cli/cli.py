@@ -21,7 +21,6 @@ import click
 import yaml
 from functional import seq
 from kodexa.model import ModelContentMetadata
-from kodexa.model.objects import PageDocumentFamily
 from kodexa.platform.client import (
     ModelStoreEndpoint,
     PageDocumentFamilyEndpoint,
@@ -168,6 +167,13 @@ def cli(info: Info, verbose: int):
             )
         )
     info.verbose = verbose
+
+
+def safe_entry_point():
+    try:
+        cli()
+    except Exception as e:
+        click.echo(e)
 
 
 @cli.command()
