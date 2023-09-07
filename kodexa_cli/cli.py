@@ -265,8 +265,6 @@ def deploy(
 
     client = KodexaClient(access_token=token, url=url)
 
-    obj = None
-
     def deploy_obj(obj):
         if "deployed" in obj:
             del obj["deployed"]
@@ -324,10 +322,13 @@ def deploy(
                 print(log_detail)
 
     if files is not None:
-        print(f"Deploying {len(files)} files")
+        from rich.progress import track
 
-        for file in files:
+        for idx in track(
+            range(len(files)), description=f"Deploying {len(files)} files"
+        ):
             obj = {}
+            file = files[idx]
             with open(file, "r") as f:
                 if file.lower().endswith(".json"):
                     obj.update(json.load(f))
