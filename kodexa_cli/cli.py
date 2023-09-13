@@ -446,10 +446,13 @@ def get(
 
             if format == "json":
                 print(
-                    Syntax(json.dumps(object_instance.model_dump(), indent=4), "json")
+                    Syntax(
+                        json.dumps(object_instance.model_dump(by_alias=True), indent=4),
+                        "json",
+                    )
                 )
             elif format == "yaml":
-                object_dict = object_instance.model_dump()
+                object_dict = object_instance.model_dump(by_alias=True)
                 print(Syntax(yaml.dump(object_dict, indent=4), "yaml"))
         else:
             print_object_table(
@@ -466,11 +469,14 @@ def get(
                 if format == "json":
                     print(
                         Syntax(
-                            json.dumps(object_instance.model_dump(), indent=4), "json"
+                            json.dumps(
+                                object_instance.model_dump(by_alias=True), indent=4
+                            ),
+                            "json",
                         )
                     )
                 elif format == "yaml" or not format:
-                    object_dict = object_instance.model_dump()
+                    object_dict = object_instance.model_dump(by_alias=True)
                     print(Syntax(yaml.dump(object_dict, indent=4), "yaml"))
             else:
                 organization = client.organizations.find_by_slug(ref)
