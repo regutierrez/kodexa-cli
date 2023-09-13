@@ -12,6 +12,7 @@ import os
 import os.path
 import sys
 from contextlib import contextmanager
+from datetime import datetime
 from getpass import getpass
 from pathlib import Path
 from shutil import copyfile
@@ -170,10 +171,20 @@ def cli(info: Info, verbose: int):
 
 
 def safe_entry_point():
+    success = True
     try:
+        print(f":rocket: Kodexa\n")
+        start_time = datetime.now()
         cli()
     except Exception as e:
-        click.echo(e)
+        success = False
+        print(f":fire: [red][bold]Failed[/bold]: {e}[/red]")
+    finally:
+        if success:
+            end_time = datetime.now()
+            print(
+                f":timer_clock: Completed @{end_time} (took {end_time - start_time}s)"
+            )
 
 
 @cli.command()
@@ -434,9 +445,11 @@ def get(
             from rich.syntax import Syntax
 
             if format == "json":
-                print(Syntax(json.dumps(object_instance.to_dict(), indent=4), "json"))
+                print(
+                    Syntax(json.dumps(object_instance.model_dump(), indent=4), "json")
+                )
             elif format == "yaml":
-                object_dict = object_instance.to_dict()
+                object_dict = object_instance.model_dump()
                 print(Syntax(yaml.dump(object_dict, indent=4), "yaml"))
         else:
             print_object_table(
@@ -452,10 +465,12 @@ def get(
 
                 if format == "json":
                     print(
-                        Syntax(json.dumps(object_instance.to_dict(), indent=4), "json")
+                        Syntax(
+                            json.dumps(object_instance.model_dump(), indent=4), "json"
+                        )
                     )
                 elif format == "yaml" or not format:
-                    object_dict = object_instance.to_dict()
+                    object_dict = object_instance.model_dump()
                     print(Syntax(yaml.dump(object_dict, indent=4), "yaml"))
             else:
                 organization = client.organizations.find_by_slug(ref)
@@ -606,7 +621,7 @@ def query(
                     f.write(df_ep.get_native())
 
             if raw:
-                print(objects_endpoint.to_dict())
+                print(objects_endpoint.model_dump())
             else:
                 for col in column_list:
                     try:
@@ -1025,7 +1040,7 @@ def package(
             import uuid
 
             model_content_metadata.state_hash = str(uuid.uuid4())
-            metadata_obj["metadata"] = model_content_metadata.to_dict()
+            metadata_obj["metadata"] = model_content_metadata.model_dump()
             name = build_json()
 
             # We need to work out the parent directory
