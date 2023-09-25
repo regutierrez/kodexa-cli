@@ -27,9 +27,8 @@ from kodexa.platform.client import (
     PageDocumentFamilyEndpoint,
     DocumentFamilyEndpoint,
 )
-from rich import print
-
 from kodexa_cli.documentation import get_path
+from rich import print
 
 logging.root.addHandler(logging.StreamHandler(sys.stdout))
 
@@ -178,12 +177,12 @@ def safe_entry_point():
         cli()
     except Exception as e:
         success = False
-        print(f":fire: [red][bold]Failed[/bold]: {e}[/red]")
+        print(f"\n:fire: [red][bold]Failed[/bold]: {e}[/red]")
     finally:
         if success:
             end_time = datetime.now()
             print(
-                f":timer_clock: Completed @{end_time} (took {end_time - start_time}s)"
+                f"\n:timer_clock: Completed @{end_time} (took {end_time - start_time}s)"
             )
 
 
@@ -576,6 +575,13 @@ def print_object_table(object_metadata, objects_endpoint, query, page, pagesize,
 @click.option("--raw/--no-raw", default=False, help="Print document family as JSON")
 @click.option("--page", default=1, help="Page number")
 @click.option("--pageSize", default=10, help="Page size")
+@click.option("--filter", default=10, help="Page size")
+@click.option(
+    "--delete/--no-delete", default=False, help="Delete the matching document families"
+)
+@click.option(
+    "--reprocess", default=None, help="Reprocess using the provided assistant ID"
+)
 @click.option("--sort", default=None, help="Sort by ie. name:asc")
 @pass_info
 def query(
@@ -589,7 +595,10 @@ def query(
     page: int,
     pagesize: int,
     sort: None,
+    filter: None,
     raw: bool,
+    reprocess: Optional[str] = None,
+    delete: bool = False,
 ):
     """
     Query the documents in a given document store
@@ -603,9 +612,14 @@ def query(
 
     document_store: DocumentStoreEndpoint = client.get_object_by_ref("store", ref)
     if isinstance(document_store, DocumentStoreEndpoint):
-        page_of_document_families: PageDocumentFamilyEndpoint = document_store.query(
-            query, page, pagesize, sort
-        )
+        if filter is not None:
+            page_of_document_families: PageDocumentFamilyEndpoint = (
+                document_store.filter(filter, page, pagesize, sort)
+            )
+        else:
+            page_of_document_families: PageDocumentFamilyEndpoint = (
+                document_store.query(query, page, pagesize, sort)
+            )
         from rich.table import Table
 
         table = Table(title=f"Listing Document Family", title_style="bold blue")
@@ -642,10 +656,27 @@ def query(
 
             console = Console()
             console.print(table)
+            total_pages = (
+                page_of_document_families.total_pages
+                if page_of_document_families.total_pages > 0
+                else 1
+            )
             console.print(
-                f"Page [bold]{page_of_document_families.number + 1}[/bold] of [bold]{page_of_document_families.total_pages}[/bold] "
+                f"Page [bold]{page_of_document_families.number + 1}[/bold] of [bold]{total_pages}[/bold] "
                 f"(total of {page_of_document_families.total_elements} document families)"
             )
+
+        if delete and Confirm.ask(
+            "You are sure you want to delete these {} families (this action can not be reverted)?".format(
+                len(page_of_document_families.content)
+            )
+        ):
+            for document_family in page_of_document_families.content:
+                document_family.delete()
+
+        if reprocess is not None:
+            raise Exception("Reprocess not yet implemented")
+
     else:
         raise Exception("Unable to find document store with ref " + ref)
 

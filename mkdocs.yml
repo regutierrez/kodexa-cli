@@ -24,8 +24,11 @@ extra:
       find what they're searching for. With your consent, you're helping us to
       make our documentation better.
 extra_javascript:
-  - https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js
-  - javascripts/tablesort.js
+  - js/asciinema-player.min.js
+extra_css:
+  - css/asciinema-player.css
+extra_javascript:
+  - javascripts/asciinema-player.min.js
 markdown_extensions:
   - admonition
   - pymdownx.details
@@ -58,6 +61,9 @@ markdown_extensions:
       emoji_generator: !!python/name:materialx.emoji.to_svg
 plugins:
   - search
+  - mkdocs-asciinema
 nav:
   - Getting Started: index.md
+  - Tutorials:
+    - Logging In: tutorials/logging-in.md
   - Reference: cli.md
