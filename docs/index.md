@@ -8,12 +8,8 @@ We have a collection of short screencasts of the Kodexa command line tools in ac
 * [Installation](tutorials/installation.md)
 * [Logging in](tutorials/logging-in.md)
 * [Listing Organizations](tutorials/listing-organizations.md)
-* [Listing Stores](tutorials/listing-stores.md)
 * [Listing Projects](tutorials/listing-projects.md)
-* [Listing Documents](tutorials/listing-documents.md)
-* [Uploading Documents](tutorials/uploading-documents.md)
-* [Deleting Documents](tutorials/deleting-documents.md)
-* [Reprocessing Documents](tutorials/reprocessing-documents.md)
+* [Working with Stores](tutorials/working-with-stores.md)
 
 ## Installation
 
