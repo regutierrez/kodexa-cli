@@ -1,6 +1,20 @@
 Kodexa command line tools provide an easy way to work with a Kodexa platform instance from the command line. The tools
 are built on top of the Python SDK and provide a simple way to interact with the platform.
 
+## Quick Start Tutorials
+
+We have a collection of short screencasts of the Kodexa command line tools in action:
+
+* [Installation](tutorials/installation.md)
+* [Logging in](tutorials/logging-in.md)
+* [Listing Organizations](tutorials/listing-organizations.md)
+* [Listing Stores](tutorials/listing-stores.md)
+* [Listing Projects](tutorials/listing-projects.md)
+* [Listing Documents](tutorials/listing-documents.md)
+* [Uploading Documents](tutorials/uploading-documents.md)
+* [Deleting Documents](tutorials/deleting-documents.md)
+* [Reprocessing Documents](tutorials/reprocessing-documents.md)
+
 ## Installation
 
 The Kodexa command line tools are available on PyPi and can be installed with pip:
