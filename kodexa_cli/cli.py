@@ -177,16 +177,16 @@ def safe_entry_point():
     success = True
     print("")
     try:
-        start_time = datetime.now()
+        start_time = datetime.now().replace(microsecond=0)
         cli()
     except Exception as e:
         success = False
         print(f"\n:fire: [red][bold]Failed[/bold]: {e}[/red]")
     finally:
         if success:
-            end_time = datetime.now()
+            end_time = datetime.now().replace(microsecond=0)
             print(
-                f"\n:timer_clock: Completed @{end_time} (took {end_time - start_time}s)"
+                f"\n:timer_clock: Completed @ {end_time} (took {end_time - start_time}s)"
             )
 
 
