@@ -27,8 +27,9 @@ from kodexa.platform.client import (
     PageDocumentFamilyEndpoint,
     DocumentFamilyEndpoint,
 )
-from kodexa_cli.documentation import get_path
 from rich import print
+
+from kodexa_cli.documentation import get_path
 
 logging.root.addHandler(logging.StreamHandler(sys.stdout))
 
@@ -558,7 +559,7 @@ def print_object_table(object_metadata, objects_endpoint, query, page, pagesize,
 
 @cli.command()
 @click.argument("ref", required=True)
-@click.argument("query", default="*")
+@click.argument("query", nargs=-1)
 @click.option(
     "--url", default=KodexaPlatform.get_url(), help="The URL to the Kodexa server"
 )
@@ -576,7 +577,9 @@ def print_object_table(object_metadata, objects_endpoint, query, page, pagesize,
 @click.option("--raw/--no-raw", default=False, help="Print document family as JSON")
 @click.option("--page", default=1, help="Page number")
 @click.option("--pageSize", default=10, help="Page size")
-@click.option("--filter", default=10, help="Page size")
+@click.option(
+    "--filter/--no-filter", default=False, help="Switch from query to filter syntax"
+)
 @click.option(
     "--delete/--no-delete", default=False, help="Delete the matching document families"
 )
@@ -587,7 +590,7 @@ def print_object_table(object_metadata, objects_endpoint, query, page, pagesize,
 @pass_info
 def query(
     _: Info,
-    query: str,
+    query: list[str],
     ref: str,
     url: str,
     token: str,
@@ -611,13 +614,16 @@ def query(
     client = KodexaClient(url=url, access_token=token)
     from kodexa.platform.client import DocumentStoreEndpoint
 
+    query = " ".join(list(query))
+
     document_store: DocumentStoreEndpoint = client.get_object_by_ref("store", ref)
     if isinstance(document_store, DocumentStoreEndpoint):
-        if filter is not None:
+        if filter:
             page_of_document_families: PageDocumentFamilyEndpoint = (
-                document_store.filter(filter, page, pagesize, sort)
+                document_store.filter(query, page, pagesize, sort)
             )
         else:
+            print(f"Using query syntax: {query}\n")
             page_of_document_families: PageDocumentFamilyEndpoint = (
                 document_store.query(query, page, pagesize, sort)
             )
