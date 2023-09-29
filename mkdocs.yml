@@ -66,10 +66,6 @@ nav:
     - Installation: tutorials/installing.md
     - Logging In: tutorials/logging-in.md
     - Listing Organizations: tutorials/listing-organizations.md
-    - Listing Stores: tutorials/listing-stores.md
     - Listing Projects: tutorials/listing-projects.md
-    - Listing Documents: tutorials/listing-documents.md
-    - Uploading Documents: tutorials/uploading-documents.md
-    - Deleting Documents: tutorials/deleting-documents.md
-    - Reprocessing Documents: tutorials/reprocessing-documents.md
+    - Working with Document Stores: tutorials/work-with-document-stores.md
   - Reference: cli.md
