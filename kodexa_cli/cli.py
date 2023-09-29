@@ -58,6 +58,7 @@ DEFAULT_COLUMNS = {
     "memberships": ["organization.slug", "organization.name"],
     "stores": ["ref", "name", "description", "store_type", "store_purpose", "template"],
     "organizations": [
+        "id",
         "slug",
         "name",
     ],
@@ -662,7 +663,7 @@ def query(
                 else 1
             )
             console.print(
-                f"Page [bold]{page_of_document_families.number + 1}[/bold] of [bold]{total_pages}[/bold] "
+                f"\nPage [bold]{page_of_document_families.number + 1}[/bold] of [bold]{total_pages}[/bold] "
                 f"(total of {page_of_document_families.total_elements} document families)"
             )
 
@@ -833,7 +834,38 @@ def delete(_: Info, object_type: str, ref: str, url: str, token: str):
     ref is the ref of the object to delete
     """
     client = KodexaClient(url, token)
-    client.get_object_by_ref(object_type, ref).delete()
+    client = KodexaClient(url=url, access_token=token)
+
+    from kodexa.platform.client import resolve_object_type
+
+    object_name, object_metadata = resolve_object_type(object_type)
+
+    if "global" in object_metadata and object_metadata["global"]:
+        objects_endpoint = client.get_object_type(object_type)
+        object_endpoint = objects_endpoint.get(ref)
+        from rich.prompt import Confirm
+
+        confirm_delete = Confirm.ask(
+            f"Please confirm you want to delete {object_metadata['name']} {object_endpoint.name}?"
+        )
+        if confirm_delete:
+            print(f"Deleting {object_type} {ref}")
+            object_endpoint.delete()
+            print(f"Deleted")
+    else:
+        if ref and not ref.isspace():
+            print(f"Deleting {object_type} {ref}")
+            object_endpoint = client.get_object_by_ref(object_metadata["plural"], ref)
+            confirm_delete = Confirm.ask(
+                f"Please confirm you want to delete {object_metadata['name']} {object_endpoint.ref}?"
+            )
+            if confirm_delete:
+                print(f"Deleting {object_type} {ref}")
+                object_endpoint.delete()
+                print(f"Deleted")
+        else:
+            print(f"You must provide a ref to get a specific object")
+            exit(1)
 
 
 @cli.command()

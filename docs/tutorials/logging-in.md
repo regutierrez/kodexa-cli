@@ -3,4 +3,4 @@
   window.onload = function(){
     AsciinemaPlayer.create('../logging-in.cast', document.getElementById('logging-id-cast'));
 }
-</script>kodexa
+</script>
