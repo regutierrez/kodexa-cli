@@ -67,5 +67,5 @@ nav:
     - Logging In: tutorials/logging-in.md
     - Listing Organizations: tutorials/listing-organizations.md
     - Listing Projects: tutorials/listing-projects.md
-    - Working with Document Stores: tutorials/work-with-document-stores.md
+    - Working with Document Stores: tutorials/working-with-stores.md
   - Reference: cli.md
