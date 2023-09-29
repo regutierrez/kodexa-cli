@@ -28,6 +28,8 @@ from kodexa.platform.client import (
     DocumentFamilyEndpoint,
 )
 from rich import print
+from rich.prompt import Confirm
+
 
 from kodexa_cli.documentation import get_path
 
@@ -849,7 +851,6 @@ def delete(_: Info, object_type: str, ref: str, url: str, token: str):
     if "global" in object_metadata and object_metadata["global"]:
         objects_endpoint = client.get_object_type(object_type)
         object_endpoint = objects_endpoint.get(ref)
-        from rich.prompt import Confirm
 
         confirm_delete = Confirm.ask(
             f"Please confirm you want to delete {object_metadata['name']} {object_endpoint.name}?"
