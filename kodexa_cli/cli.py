@@ -174,17 +174,35 @@ def cli(info: Info, verbose: int):
 
 
 def safe_entry_point():
+    """
+    This function is a safe entry point that handles any exceptions
+    that occur when the cli() function is called. It prints the time
+    the function started and ended, as well as any exceptions that occur.
+
+    This function is primarily used as a wrapper to ensure that any exceptions
+    that occur during execution are handled gracefully and that the execution
+    time is logged for debugging or performance tuning purposes.
+    """
+    # Assuming that execution is successful initially
     success = True
     print("")
     try:
+        # Record the starting time of the function execution
         start_time = datetime.now().replace(microsecond=0)
+
+        # Call the cli() function
         cli()
     except Exception as e:
+        # If an exception occurs, mark success as False and print the exception
         success = False
         print(f"\n:fire: [red][bold]Failed[/bold]: {e}[/red]")
     finally:
+        # If the execution was successful
         if success:
+            # Record the end time of the function execution
             end_time = datetime.now().replace(microsecond=0)
+
+            # Print the end time and the time taken for function execution
             print(
                 f"\n:timer_clock: Completed @ {end_time} (took {end_time - start_time}s)"
             )
