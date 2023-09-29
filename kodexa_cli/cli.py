@@ -171,8 +171,8 @@ def cli(info: Info, verbose: int):
 
 def safe_entry_point():
     success = True
+    print("")
     try:
-        print(f":rocket: Kodexa\n")
         start_time = datetime.now()
         cli()
     except Exception as e:
