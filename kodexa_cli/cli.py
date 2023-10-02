@@ -432,6 +432,9 @@ def logs(_: Info, execution_id: str, url: str, token: str):
 @click.option("--page", default=1, help="Page number")
 @click.option("--pageSize", default=10, help="Page size")
 @click.option("--sort", default=None, help="Sort by (ie. startDate:desc)")
+@click.option(
+    "--output", default=None, help="Output filename for JSON or YAML dump"
+)  # Added output option
 @pass_info
 def get(
     _: Info,
@@ -445,6 +448,7 @@ def get(
     page: int = 1,
     pagesize: int = 10,
     sort: str = None,
+    output: str = None,
 ):
     """
     List the instances of the component or entity type
@@ -498,6 +502,12 @@ def get(
                     )
                 elif format == "yaml" or not format:
                     object_dict = object_instance.model_dump(by_alias=True)
+                    if output:
+                        print("OUTPUT")
+                        output_filename = output
+                        with open(output_filename, "w") as yaml_file:
+                            yaml_file.write(yaml.dump(object_dict, indent=4))
+                        print(f"YAML data saved to {output_filename}")
                     print(Syntax(yaml.dump(object_dict, indent=4), "yaml"))
             else:
                 organization = client.organizations.find_by_slug(ref)
