@@ -1134,7 +1134,7 @@ def package(
             import uuid
 
             model_content_metadata.state_hash = str(uuid.uuid4())
-            metadata_obj["metadata"] = model_content_metadata.model_dump()
+            metadata_obj["metadata"] = model_content_metadata.model_dump(by_alias=True)
             name = build_json()
 
             # We need to work out the parent directory
