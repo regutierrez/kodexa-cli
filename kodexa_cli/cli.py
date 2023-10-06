@@ -889,7 +889,6 @@ def delete(_: Info, object_type: str, ref: str, url: str, token: str):
             print(f"Deleted")
     else:
         if ref and not ref.isspace():
-            print(f"Deleting {object_type} {ref}")
             object_endpoint = client.get_object_by_ref(object_metadata["plural"], ref)
             confirm_delete = Confirm.ask(
                 f"Please confirm you want to delete {object_metadata['name']} {object_endpoint.ref}?"
