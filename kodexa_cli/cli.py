@@ -420,6 +420,21 @@ def logs(_: Info, execution_id: str, url: str, token: str):
 
 
 @cli.command()
+@click.argument("ref", required=True)
+@click.argument("output_file", required=False, default="implementation.zip")
+@click.option(
+    "--url", default=KodexaPlatform.get_url(), help="The URL to the Kodexa server"
+)
+@click.option("--token", default=KodexaPlatform.get_access_token(), help="Access token")
+@pass_info
+def download_implementation(_: Info, ref: str, output_file: str, url: str, token: str):
+    # We are going to download the implementation of the component
+    client = KodexaClient(url=url, access_token=token)
+    model_store_endpoint: ModelStoreEndpoint = client.get_object_by_ref("store", ref)
+    model_store_endpoint.download_implementation(output_file)
+
+
+@cli.command()
 @click.argument("object_type", required=True)
 @click.argument("ref", required=False)
 @click.option(
@@ -503,7 +518,6 @@ def get(
                 elif format == "yaml" or not format:
                     object_dict = object_instance.model_dump(by_alias=True)
                     if output:
-                        print("OUTPUT")
                         output_filename = output
                         with open(output_filename, "w") as yaml_file:
                             yaml_file.write(yaml.dump(object_dict, indent=4))
