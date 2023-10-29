@@ -428,6 +428,9 @@ def logs(_: Info, execution_id: str, url: str, token: str):
 @click.option("--token", default=KodexaPlatform.get_access_token(), help="Access token")
 @pass_info
 def download_implementation(_: Info, ref: str, output_file: str, url: str, token: str):
+    """
+    Download the implementation of a model store
+    """
     # We are going to download the implementation of the component
     client = KodexaClient(url=url, access_token=token)
     model_store_endpoint: ModelStoreEndpoint = client.get_object_by_ref("store", ref)
