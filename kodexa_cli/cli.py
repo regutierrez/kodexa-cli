@@ -421,7 +421,7 @@ def logs(_: Info, execution_id: str, url: str, token: str):
 
 @cli.command()
 @click.argument("ref", required=True)
-@click.argument("output_file", required=False, default="implementation.zip")
+@click.argument("output_file", required=False, default="model_implementation")
 @click.option(
     "--url", default=KodexaPlatform.get_url(), help="The URL to the Kodexa server"
 )
