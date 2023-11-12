@@ -634,6 +634,11 @@ def print_object_table(object_metadata, objects_endpoint, query, page, pagesize,
     help="Download the native file for the family",
 )
 @click.option("--raw/--no-raw", default=False, help="Print document family as JSON")
+@click.option(
+    "--stream/--no-stream",
+    default=False,
+    help="Stream the document families, don't paginate",
+)
 @click.option("--page", default=1, help="Page number")
 @click.option("--pageSize", default=10, help="Page size")
 @click.option(
@@ -644,6 +649,9 @@ def print_object_table(object_metadata, objects_endpoint, query, page, pagesize,
 )
 @click.option(
     "--reprocess", default=None, help="Reprocess using the provided assistant ID"
+)
+@click.options(
+    "--threads", default=5, help="Number of threads to use (only in streaming)"
 )
 @click.option("--sort", default=None, help="Sort by ie. name:asc")
 @pass_info
@@ -662,12 +670,16 @@ def query(
     raw: bool,
     reprocess: Optional[str] = None,
     delete: bool = False,
+    stream: bool = False,
+    threads: int = 5,
 ):
     """
     Query the documents in a given document store
 
     ref is the reference to the document store
     query is the query to run
+    reprocess is the assistant id to use for reprocessing
+    delete will delete the document families that match the query
 
     """
     client = KodexaClient(url=url, access_token=token)
@@ -677,38 +689,39 @@ def query(
 
     document_store: DocumentStoreEndpoint = client.get_object_by_ref("store", ref)
     if isinstance(document_store, DocumentStoreEndpoint):
-        if filter:
-            page_of_document_families: PageDocumentFamilyEndpoint = (
-                document_store.filter(query, page, pagesize, sort)
-            )
-        else:
-            print(f"Using query syntax: {query}\n")
-            page_of_document_families: PageDocumentFamilyEndpoint = (
-                document_store.query(query, page, pagesize, sort)
-            )
-        from rich.table import Table
-
-        table = Table(title=f"Listing Document Family", title_style="bold blue")
-        column_list = ["path", "created", "modified", "size"]
-        # Create column header for the table
-        for col in column_list:
-            table.add_column(col)
-
-        # Get column values
-        for objects_endpoint in page_of_document_families.content:
-            row = []
-
-            if download:
-                df_ep: DocumentFamilyEndpoint = objects_endpoint
-                df_ep.get_document().to_kddb().save(df_ep.path + ".kddb")
-            if download_native:
-                df_ep: DocumentFamilyEndpoint = objects_endpoint
-                with open(df_ep.path + ".native", "wb") as f:
-                    f.write(df_ep.get_native())
-
-            if raw:
-                print(objects_endpoint.model_dump())
+        if stream:
+            if filter:
+                page_of_document_families: PageDocumentFamilyEndpoint = (
+                    document_store.stream_filter(query, page, pagesize, sort)
+                )
             else:
+                print(f"Using query syntax: {query}\n")
+                page_of_document_families: PageDocumentFamilyEndpoint = (
+                    document_store.stream_filter(query, page, pagesize, sort)
+                )
+        else:
+            if filter:
+                page_of_document_families: PageDocumentFamilyEndpoint = (
+                    document_store.filter(query, page, pagesize, sort)
+                )
+            else:
+                print(f"Using query syntax: {query}\n")
+                page_of_document_families: PageDocumentFamilyEndpoint = (
+                    document_store.query(query, page, pagesize, sort)
+                )
+
+        if not stream and not raw:
+            from rich.table import Table
+
+            table = Table(title=f"Listing Document Family", title_style="bold blue")
+            column_list = ["path", "created", "modified", "size"]
+            # Create column header for the table
+            for col in column_list:
+                table.add_column(col)
+
+            # Get column values
+            for objects_endpoint in page_of_document_families.content:
+                row = []
                 for col in column_list:
                     try:
                         value = str(getattr(objects_endpoint, col))
@@ -717,7 +730,6 @@ def query(
                         row.append("")
                 table.add_row(*row, style="yellow")
 
-        if not raw:
             from rich.console import Console
 
             console = Console()
@@ -732,17 +744,57 @@ def query(
                 f"(total of {page_of_document_families.total_elements} document families)"
             )
 
-        if delete and Confirm.ask(
-            "You are sure you want to delete these {} families (this action can not be reverted)?".format(
-                len(page_of_document_families.content)
-            )
+            if raw:
+                print(objects_endpoint.model_dump())
+            else:
+                for col in column_list:
+                    try:
+                        value = str(getattr(objects_endpoint, col))
+                        row.append(value)
+                    except AttributeError:
+                        row.append("")
+                table.add_row(*row, style="yellow")
+
+        # We want to go through all the endpoints to do the other actions
+        document_families = (
+            page_of_document_families if stream else page_of_document_families.content
+        )
+
+        if delete and not Confirm.ask(
+            "You are sure you want to delete these families (this action can not be reverted)?"
         ):
-            for document_family in page_of_document_families.content:
-                document_family.delete()
+            print("Aborting delete")
+            exit(1)
+
+        import concurrent.futures
 
         if reprocess is not None:
-            raise Exception("Reprocess not yet implemented")
+            # We need to get the assistant so we can reprocess
+            assistant = client.assistants.get(reprocess)
+            if assistant is None:
+                print(f"Unable to find assistant with id {reprocess}")
+                exit(1)
 
+        with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
+            for document_family in executor.map(document_families):
+                objects_endpoint: DocumentFamilyEndpoint = document_family
+                if download:
+                    print(f"Downloading document for {objects_endpoint.path}")
+                    df_ep: DocumentFamilyEndpoint = objects_endpoint
+                    df_ep.get_document().to_kddb().save(df_ep.path + ".kddb")
+                if download_native:
+                    print(f"Downloading native object for {objects_endpoint.path}")
+                    df_ep: DocumentFamilyEndpoint = objects_endpoint
+                    with open(df_ep.path + ".native", "wb") as f:
+                        f.write(df_ep.get_native())
+
+                if delete:
+                    print(f"Deleting {objects_endpoint.path}")
+                    document_family.delete()
+
+                if reprocess is not None:
+                    print(f"Reprocessing {objects_endpoint.path}")
+                    document_family.reprocess(assistant)
     else:
         raise Exception("Unable to find document store with ref " + ref)
 
