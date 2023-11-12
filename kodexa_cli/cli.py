@@ -242,6 +242,8 @@ def upload(_: Info, ref: str, paths: list[str], token: str, url: str, threads: i
             except Exception as e:
                 return f"Error uploading {path}: {e}"
 
+        from concurrent.futures import ThreadPoolExecutor
+
         # Using ThreadPoolExecutor
         with ThreadPoolExecutor(max_workers=threads) as executor:
             # Map the upload function to each file path
