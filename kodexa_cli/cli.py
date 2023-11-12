@@ -650,7 +650,7 @@ def print_object_table(object_metadata, objects_endpoint, query, page, pagesize,
 @click.option(
     "--reprocess", default=None, help="Reprocess using the provided assistant ID"
 )
-@click.options(
+@click.option(
     "--threads", default=5, help="Number of threads to use (only in streaming)"
 )
 @click.option("--sort", default=None, help="Sort by ie. name:asc")
