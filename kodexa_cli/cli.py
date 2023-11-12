@@ -214,14 +214,16 @@ def safe_entry_point():
 @click.option(
     "--url", default=KodexaPlatform.get_url(), help="The URL to the Kodexa server"
 )
+@click.option("--threads", default=5, help="Number of threads to use")
 @click.option("--token", default=KodexaPlatform.get_access_token(), help="Access token")
 @pass_info
-def upload(_: Info, ref: str, paths: list[str], token: str, url: str):
+def upload(_: Info, ref: str, paths: list[str], token: str, url: str, threads: int):
     """
     Upload a file to the Kodexa platform.
 
     ref is the reference to the document store to upload to.
     path is the path to the file to upload, it can be many files.
+    threads is the number of threads to use for the upload (default is 5)
     """
 
     client = KodexaClient(url=url, access_token=token)
@@ -233,14 +235,22 @@ def upload(_: Info, ref: str, paths: list[str], token: str, url: str):
     if isinstance(document_store, DocumentStoreEndpoint):
         from rich.progress import track
 
-        for step in track(range(len(paths)), description="Uploading files"):
-            path_match = paths[step]
-
+        def upload_file(path):
             try:
-                document_store.upload_file(path_match)
+                document_store.upload_file(path)
+                return f"Successfully uploaded {path}"
             except Exception as e:
-                print(f"Error uploading {path_match}: {e}")
+                return f"Error uploading {path}: {e}"
 
+        # Using ThreadPoolExecutor
+        with ThreadPoolExecutor(max_workers=threads) as executor:
+            # Map the upload function to each file path
+            for result in track(
+                executor.map(upload_file, paths),
+                total=len(paths),
+                description="Uploading files",
+            ):
+                print(result)
         print("Upload complete :tada:")
     else:
         print(f"{ref} is not a document store")
