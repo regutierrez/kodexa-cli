@@ -653,7 +653,10 @@ def print_object_table(object_metadata, objects_endpoint, query, page, pagesize,
     "--reprocess", default=None, help="Reprocess using the provided assistant ID"
 )
 @click.option(
-    "--watch", default=None, help="Watch the results, refresh every n seconds"
+    "--watch",
+    default=None,
+    help="Watch the results, refresh every n seconds",
+    type=int,
 )
 @click.option(
     "--threads",
