@@ -633,7 +633,6 @@ def print_object_table(object_metadata, objects_endpoint, query, page, pagesize,
     default=False,
     help="Download the native file for the family",
 )
-@click.option("--raw/--no-raw", default=False, help="Print document family as JSON")
 @click.option(
     "--stream/--no-stream",
     default=False,
@@ -752,17 +751,6 @@ def query(
                 f"\nPage [bold]{page_of_document_families.number + 1}[/bold] of [bold]{total_pages}[/bold] "
                 f"(total of {page_of_document_families.total_elements} document families)"
             )
-
-            if raw:
-                print(objects_endpoint.model_dump())
-            else:
-                for col in column_list:
-                    try:
-                        value = str(getattr(objects_endpoint, col))
-                        row.append(value)
-                    except AttributeError:
-                        row.append("")
-                table.add_row(*row, style="yellow")
 
         # We want to go through all the endpoints to do the other actions
         document_families = (
