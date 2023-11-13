@@ -789,7 +789,7 @@ def query(
                         print(f"Downloading document for {document_family.path}")
                         document_family: DocumentFamilyEndpoint = document_family
                         document_family.get_document().to_kddb().save(
-                            df_ep.path + ".kddb"
+                            document_family.path + ".kddb"
                         )
                     if download_native:
                         print(f"Downloading native object for {document_family.path}")
