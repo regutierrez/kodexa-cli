@@ -641,6 +641,7 @@ def print_object_table(object_metadata, objects_endpoint, query, page, pagesize,
 )
 @click.option("--page", default=1, help="Page number")
 @click.option("--pageSize", default=10, help="Page size")
+@click.option("--limit", default=None, help="Limit the number of results in streaming")
 @click.option(
     "--filter/--no-filter", default=False, help="Switch from query to filter syntax"
 )
@@ -672,6 +673,7 @@ def query(
     delete: bool = False,
     stream: bool = False,
     threads: int = 5,
+    limit: Optional[int] = None,
 ):
     """
     Query the documents in a given document store
@@ -692,12 +694,12 @@ def query(
         if stream:
             if filter:
                 page_of_document_families: PageDocumentFamilyEndpoint = (
-                    document_store.stream_filter(query, page, pagesize, sort)
+                    document_store.stream_filter(query, sort, limit)
                 )
             else:
                 print(f"Using query syntax: {query}\n")
                 page_of_document_families: PageDocumentFamilyEndpoint = (
-                    document_store.stream_filter(query, page, pagesize, sort)
+                    document_store.stream_filter(query, sort, limit)
                 )
         else:
             if filter:
@@ -777,26 +779,29 @@ def query(
 
             print(f"Reprocessing with assistant {assistant.name}")
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
-            for document_family in executor.map(document_families):
-                objects_endpoint: DocumentFamilyEndpoint = document_family
-                if download:
-                    print(f"Downloading document for {objects_endpoint.path}")
-                    df_ep: DocumentFamilyEndpoint = objects_endpoint
-                    df_ep.get_document().to_kddb().save(df_ep.path + ".kddb")
-                if download_native:
-                    print(f"Downloading native object for {objects_endpoint.path}")
-                    df_ep: DocumentFamilyEndpoint = objects_endpoint
-                    with open(df_ep.path + ".native", "wb") as f:
-                        f.write(df_ep.get_native())
+        if stream:
+            print(f"Streaming document families")
+            with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
+                for document_family in executor.map(document_families):
+                    objects_endpoint: DocumentFamilyEndpoint = document_family
+                    if download:
+                        print(f"Downloading document for {objects_endpoint.path}")
+                        df_ep: DocumentFamilyEndpoint = objects_endpoint
+                        df_ep.get_document().to_kddb().save(df_ep.path + ".kddb")
+                    if download_native:
+                        print(f"Downloading native object for {objects_endpoint.path}")
+                        df_ep: DocumentFamilyEndpoint = objects_endpoint
+                        with open(df_ep.path + ".native", "wb") as f:
+                            f.write(df_ep.get_native())
 
-                if delete:
-                    print(f"Deleting {objects_endpoint.path}")
-                    document_family.delete()
+                    if delete:
+                        print(f"Deleting {objects_endpoint.path}")
+                        document_family.delete()
 
-                if reprocess is not None:
-                    print(f"Reprocessing {objects_endpoint.path}")
-                    document_family.reprocess(assistant)
+                    if reprocess is not None:
+                        print(f"Reprocessing {objects_endpoint.path}")
+                        document_family.reprocess(assistant)
+
     else:
         raise Exception("Unable to find document store with ref " + ref)
 
