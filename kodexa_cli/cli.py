@@ -784,7 +784,8 @@ def query(
         if stream:
             print(f"Streaming document families (with {threads} threads)")
             with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
-                for document_family in executor.map(document_families):
+
+                def process_family(document_family):
                     if download:
                         print(f"Downloading document for {document_family.path}")
                         document_family: DocumentFamilyEndpoint = document_family
@@ -803,6 +804,8 @@ def query(
                     if reprocess is not None:
                         print(f"Reprocessing {document_family.path}")
                         document_family.reprocess(assistant)
+
+                executor.map(process_family, document_families)
 
     else:
         raise Exception("Unable to find document store with ref " + ref)
