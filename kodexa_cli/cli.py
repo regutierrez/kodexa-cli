@@ -693,21 +693,23 @@ def query(
     if isinstance(document_store, DocumentStoreEndpoint):
         if stream:
             if filter:
-                page_of_document_families: PageDocumentFamilyEndpoint = (
-                    document_store.stream_filter(query, sort, limit)
+                print(f"Streaming filter: {query}\n")
+                page_of_document_families = document_store.stream_filter(
+                    query, sort, limit
                 )
             else:
-                print(f"Using query syntax: {query}\n")
-                page_of_document_families: PageDocumentFamilyEndpoint = (
-                    document_store.stream_filter(query, sort, limit)
+                print(f"Streaming query: {query}\n")
+                page_of_document_families = document_store.stream_query(
+                    query, sort, limit
                 )
         else:
             if filter:
+                print(f"Using filter: {query}\n")
                 page_of_document_families: PageDocumentFamilyEndpoint = (
                     document_store.filter(query, page, pagesize, sort)
                 )
             else:
-                print(f"Using query syntax: {query}\n")
+                print(f"Using query: {query}\n")
                 page_of_document_families: PageDocumentFamilyEndpoint = (
                     document_store.query(query, page, pagesize, sort)
                 )
@@ -780,26 +782,26 @@ def query(
             print(f"Reprocessing with assistant {assistant.name}")
 
         if stream:
-            print(f"Streaming document families")
+            print(f"Streaming document families (with {threads} threads)")
             with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
                 for document_family in executor.map(document_families):
-                    objects_endpoint: DocumentFamilyEndpoint = document_family
                     if download:
-                        print(f"Downloading document for {objects_endpoint.path}")
-                        df_ep: DocumentFamilyEndpoint = objects_endpoint
-                        df_ep.get_document().to_kddb().save(df_ep.path + ".kddb")
+                        print(f"Downloading document for {document_family.path}")
+                        document_family: DocumentFamilyEndpoint = document_family
+                        document_family.get_document().to_kddb().save(
+                            df_ep.path + ".kddb"
+                        )
                     if download_native:
-                        print(f"Downloading native object for {objects_endpoint.path}")
-                        df_ep: DocumentFamilyEndpoint = objects_endpoint
-                        with open(df_ep.path + ".native", "wb") as f:
-                            f.write(df_ep.get_native())
+                        print(f"Downloading native object for {document_family.path}")
+                        with open(document_family.path + ".native", "wb") as f:
+                            f.write(document_family.get_native())
 
                     if delete:
-                        print(f"Deleting {objects_endpoint.path}")
+                        print(f"Deleting {document_family.path}")
                         document_family.delete()
 
                     if reprocess is not None:
-                        print(f"Reprocessing {objects_endpoint.path}")
+                        print(f"Reprocessing {document_family.path}")
                         document_family.reprocess(assistant)
 
     else:
