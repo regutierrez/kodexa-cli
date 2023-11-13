@@ -775,6 +775,8 @@ def query(
                 print(f"Unable to find assistant with id {reprocess}")
                 exit(1)
 
+            print(f"Reprocessing with assistant {assistant.name}")
+
         with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
             for document_family in executor.map(document_families):
                 objects_endpoint: DocumentFamilyEndpoint = document_family
