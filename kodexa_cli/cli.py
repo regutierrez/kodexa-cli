@@ -640,8 +640,10 @@ def print_object_table(object_metadata, objects_endpoint, query, page, pagesize,
     help="Stream the document families, don't paginate",
 )
 @click.option("--page", default=1, help="Page number")
-@click.option("--pageSize", default=10, help="Page size")
-@click.option("--limit", default=None, help="Limit the number of results in streaming")
+@click.option("--pageSize", default=10, help="Page size", type=int)
+@click.option(
+    "--limit", default=None, help="Limit the number of results in streaming", type=int
+)
 @click.option(
     "--filter/--no-filter", default=False, help="Switch from query to filter syntax"
 )
@@ -652,7 +654,10 @@ def print_object_table(object_metadata, objects_endpoint, query, page, pagesize,
     "--reprocess", default=None, help="Reprocess using the provided assistant ID"
 )
 @click.option(
-    "--threads", default=5, help="Number of threads to use (only in streaming)"
+    "--threads",
+    default=5,
+    help="Number of threads to use (only in streaming)",
+    type=int,
 )
 @click.option("--sort", default=None, help="Sort by ie. name:asc")
 @pass_info
