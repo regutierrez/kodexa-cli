@@ -672,7 +672,6 @@ def query(
     pagesize: int,
     sort: None,
     filter: None,
-    raw: bool,
     reprocess: Optional[str] = None,
     delete: bool = False,
     stream: bool = False,
@@ -718,7 +717,7 @@ def query(
                     document_store.query(query, page, pagesize, sort)
                 )
 
-        if not stream and not raw:
+        if not stream:
             from rich.table import Table
 
             table = Table(title=f"Listing Document Family", title_style="bold blue")
