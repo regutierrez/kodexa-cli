@@ -653,6 +653,9 @@ def print_object_table(object_metadata, objects_endpoint, query, page, pagesize,
     "--reprocess", default=None, help="Reprocess using the provided assistant ID"
 )
 @click.option(
+    "--watch", default=None, help="Watch the results, refresh every n seconds"
+)
+@click.option(
     "--threads",
     default=5,
     help="Number of threads to use (only in streaming)",
@@ -677,6 +680,7 @@ def query(
     stream: bool = False,
     threads: int = 5,
     limit: Optional[int] = None,
+    watch: Optional[int] = None,
 ):
     """
     Query the documents in a given document store
@@ -693,114 +697,129 @@ def query(
     query = " ".join(list(query))
 
     document_store: DocumentStoreEndpoint = client.get_object_by_ref("store", ref)
-    if isinstance(document_store, DocumentStoreEndpoint):
-        if stream:
-            if filter:
-                print(f"Streaming filter: {query}\n")
-                page_of_document_families = document_store.stream_filter(
-                    query, sort, limit
-                )
+
+    while True:
+        if isinstance(document_store, DocumentStoreEndpoint):
+            if stream:
+                if filter:
+                    print(f"Streaming filter: {query}\n")
+                    page_of_document_families = document_store.stream_filter(
+                        query, sort, limit
+                    )
+                else:
+                    print(f"Streaming query: {query}\n")
+                    page_of_document_families = document_store.stream_query(
+                        query, sort, limit
+                    )
             else:
-                print(f"Streaming query: {query}\n")
-                page_of_document_families = document_store.stream_query(
-                    query, sort, limit
-                )
-        else:
-            if filter:
-                print(f"Using filter: {query}\n")
-                page_of_document_families: PageDocumentFamilyEndpoint = (
-                    document_store.filter(query, page, pagesize, sort)
-                )
-            else:
-                print(f"Using query: {query}\n")
-                page_of_document_families: PageDocumentFamilyEndpoint = (
-                    document_store.query(query, page, pagesize, sort)
-                )
+                if filter:
+                    print(f"Using filter: {query}\n")
+                    page_of_document_families: PageDocumentFamilyEndpoint = (
+                        document_store.filter(query, page, pagesize, sort)
+                    )
+                else:
+                    print(f"Using query: {query}\n")
+                    page_of_document_families: PageDocumentFamilyEndpoint = (
+                        document_store.query(query, page, pagesize, sort)
+                    )
 
-        if not stream:
-            from rich.table import Table
+            if not stream:
+                from rich.table import Table
 
-            table = Table(title=f"Listing Document Family", title_style="bold blue")
-            column_list = ["path", "created", "modified", "size"]
-            # Create column header for the table
-            for col in column_list:
-                table.add_column(col)
-
-            # Get column values
-            for objects_endpoint in page_of_document_families.content:
-                row = []
+                table = Table(title=f"Listing Document Family", title_style="bold blue")
+                column_list = ["path", "created", "modified", "size"]
+                # Create column header for the table
                 for col in column_list:
-                    try:
-                        value = str(getattr(objects_endpoint, col))
-                        row.append(value)
-                    except AttributeError:
-                        row.append("")
-                table.add_row(*row, style="yellow")
+                    table.add_column(col)
 
-            from rich.console import Console
+                # Get column values
+                for objects_endpoint in page_of_document_families.content:
+                    row = []
+                    for col in column_list:
+                        try:
+                            value = str(getattr(objects_endpoint, col))
+                            row.append(value)
+                        except AttributeError:
+                            row.append("")
+                    table.add_row(*row, style="yellow")
 
-            console = Console()
-            console.print(table)
-            total_pages = (
-                page_of_document_families.total_pages
-                if page_of_document_families.total_pages > 0
-                else 1
+                from rich.console import Console
+
+                console = Console()
+                console.print(table)
+                total_pages = (
+                    page_of_document_families.total_pages
+                    if page_of_document_families.total_pages > 0
+                    else 1
+                )
+                console.print(
+                    f"\nPage [bold]{page_of_document_families.number + 1}[/bold] of [bold]{total_pages}[/bold] "
+                    f"(total of {page_of_document_families.total_elements} document families)"
+                )
+
+            # We want to go through all the endpoints to do the other actions
+            document_families = (
+                page_of_document_families
+                if stream
+                else page_of_document_families.content
             )
-            console.print(
-                f"\nPage [bold]{page_of_document_families.number + 1}[/bold] of [bold]{total_pages}[/bold] "
-                f"(total of {page_of_document_families.total_elements} document families)"
-            )
 
-        # We want to go through all the endpoints to do the other actions
-        document_families = (
-            page_of_document_families if stream else page_of_document_families.content
-        )
-
-        if delete and not Confirm.ask(
-            "You are sure you want to delete these families (this action can not be reverted)?"
-        ):
-            print("Aborting delete")
-            exit(1)
-
-        import concurrent.futures
-
-        if reprocess is not None:
-            # We need to get the assistant so we can reprocess
-            assistant = client.assistants.get(reprocess)
-            if assistant is None:
-                print(f"Unable to find assistant with id {reprocess}")
+            if delete and not Confirm.ask(
+                "You are sure you want to delete these families (this action can not be reverted)?"
+            ):
+                print("Aborting delete")
                 exit(1)
 
-            print(f"Reprocessing with assistant {assistant.name}")
+            import concurrent.futures
 
-        if stream:
-            print(f"Streaming document families (with {threads} threads)")
-            with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
+            if reprocess is not None:
+                # We need to get the assistant so we can reprocess
+                assistant = client.assistants.get(reprocess)
+                if assistant is None:
+                    print(f"Unable to find assistant with id {reprocess}")
+                    exit(1)
 
-                def process_family(document_family):
-                    if download:
-                        print(f"Downloading document for {document_family.path}")
-                        document_family: DocumentFamilyEndpoint = document_family
-                        document_family.get_document().to_kddb().save(
-                            document_family.path + ".kddb"
-                        )
-                    if download_native:
-                        print(f"Downloading native object for {document_family.path}")
-                        with open(document_family.path + ".native", "wb") as f:
-                            f.write(document_family.get_native())
+                print(f"Reprocessing with assistant {assistant.name}")
 
-                    if delete:
-                        print(f"Deleting {document_family.path}")
-                        document_family.delete()
+            if stream:
+                print(f"Streaming document families (with {threads} threads)")
+                with concurrent.futures.ThreadPoolExecutor(
+                    max_workers=threads
+                ) as executor:
 
-                    if reprocess is not None:
-                        print(f"Reprocessing {document_family.path}")
-                        document_family.reprocess(assistant)
+                    def process_family(document_family):
+                        if download:
+                            print(f"Downloading document for {document_family.path}")
+                            document_family: DocumentFamilyEndpoint = document_family
+                            document_family.get_document().to_kddb().save(
+                                document_family.path + ".kddb"
+                            )
+                        if download_native:
+                            print(
+                                f"Downloading native object for {document_family.path}"
+                            )
+                            with open(document_family.path + ".native", "wb") as f:
+                                f.write(document_family.get_native())
 
-                executor.map(process_family, document_families)
+                        if delete:
+                            print(f"Deleting {document_family.path}")
+                            document_family.delete()
 
-    else:
-        raise Exception("Unable to find document store with ref " + ref)
+                        if reprocess is not None:
+                            print(f"Reprocessing {document_family.path}")
+                            document_family.reprocess(assistant)
+
+                    executor.map(process_family, document_families)
+
+        else:
+            raise Exception("Unable to find document store with ref " + ref)
+
+        if not watch:
+            break
+        else:
+            import time
+
+            time.sleep(watch)
 
 
 @cli.command()
