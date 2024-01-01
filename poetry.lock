@@ -335,13 +335,13 @@ i18n = ["Babel (>=2.7)"]
 
 [[package]]
 name = "kodexa"
-version = "7.0.7347222586"
+version = "7.0.7352606925"
 description = "Python SDK for the Kodexa Platform"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "kodexa-7.0.7347222586-py3-none-any.whl", hash = "sha256:aa90e8d8adaaf5ff646446a5fa6f0a6861c032d89b44ce47b38c726b0e7bc811"},
-    {file = "kodexa-7.0.7347222586.tar.gz", hash = "sha256:cf22e03914fa8f786cc30bb3de2b1f4eb7734b6a9909724b09bb4f540a8e31d0"},
+    {file = "kodexa-7.0.7352606925-py3-none-any.whl", hash = "sha256:bbf132f4c8bde0d7fa6b931a99a4da04d291353db52bf152a38fff4de14a0ae1"},
+    {file = "kodexa-7.0.7352606925.tar.gz", hash = "sha256:f74f3678f19a3769c3d08406dbf16ed7c4d274397afde97941fb3c5b4c6226cb"},
 ]
 
 [package.dependencies]
@@ -1127,13 +1127,13 @@ windows-terminal = ["colorama (>=0.4.6)"]
 
 [[package]]
 name = "pymdown-extensions"
-version = "10.6"
+version = "10.7"
 description = "Extension pack for Python Markdown."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "pymdown_extensions-10.6-py3-none-any.whl", hash = "sha256:561eb3a5f3c3c2512952a4d6f5b311aa124b7147bd54a3ea0f36ce030c7e3dd9"},
-    {file = "pymdown_extensions-10.6.tar.gz", hash = "sha256:e4531379e0d74b329ff264217ef5b8b1a37bed3afe36f98001b74ecff52215c0"},
+    {file = "pymdown_extensions-10.7-py3-none-any.whl", hash = "sha256:6ca215bc57bc12bf32b414887a68b810637d039124ed9b2e5bd3325cbb2c050c"},
+    {file = "pymdown_extensions-10.7.tar.gz", hash = "sha256:c0d64d5cf62566f59e6b2b690a4095c931107c250a8c8e1351c1de5f6b036deb"},
 ]
 
 [package.dependencies]
@@ -1145,13 +1145,13 @@ extra = ["pygments (>=2.12)"]
 
 [[package]]
 name = "pytest"
-version = "7.4.3"
+version = "7.4.4"
 description = "pytest: simple powerful testing with Python"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "pytest-7.4.3-py3-none-any.whl", hash = "sha256:0d009c083ea859a71b76adf7c1d502e4bc170b80a8ef002da5806527b9591fac"},
-    {file = "pytest-7.4.3.tar.gz", hash = "sha256:d989d136982de4e3b29dabcc838ad581c64e8ed52c11fbe86ddebd9da0818cd5"},
+    {file = "pytest-7.4.4-py3-none-any.whl", hash = "sha256:b090cdf5ed60bf4c45261be03239c2c1c22df034fbffe691abe93cd80cea01d8"},
+    {file = "pytest-7.4.4.tar.gz", hash = "sha256:2cf0005922c6ace4a3e2ec8b4080eb0d9753fdc93107415332f50ce9e7994280"},
 ]
 
 [package.dependencies]
@@ -1541,13 +1541,13 @@ files = [
 
 [[package]]
 name = "tzdata"
-version = "2023.3"
+version = "2023.4"
 description = "Provider of IANA time zone data"
 optional = false
 python-versions = ">=2"
 files = [
-    {file = "tzdata-2023.3-py2.py3-none-any.whl", hash = "sha256:7e65763eef3120314099b6939b5546db7adce1e7d6f2e179e3df563c70511eda"},
-    {file = "tzdata-2023.3.tar.gz", hash = "sha256:11ef1e08e54acb0d4f95bdb1be05da659673de4acbd21bf9c69e94cc5e907a3a"},
+    {file = "tzdata-2023.4-py2.py3-none-any.whl", hash = "sha256:aa3ace4329eeacda5b7beb7ea08ece826c28d761cda36e747cfbf97996d39bf3"},
+    {file = "tzdata-2023.4.tar.gz", hash = "sha256:dd54c94f294765522c77399649b4fefd95522479a664a0cec87f41bebc6148c9"},
 ]
 
 [[package]]

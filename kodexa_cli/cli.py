@@ -30,7 +30,6 @@ from kodexa.platform.client import (
 from rich import print
 from rich.prompt import Confirm
 
-
 from kodexa_cli.documentation import get_path
 
 logging.root.addHandler(logging.StreamHandler(sys.stdout))
@@ -173,6 +172,8 @@ def cli(info: Info, verbose: int):
     info.verbose = verbose
 
 
+GLOBAL_IGNORE_COMPLETE = False
+
 def safe_entry_point():
     """
     This function is a safe entry point that handles any exceptions
@@ -198,7 +199,8 @@ def safe_entry_point():
         print(f"\n:fire: [red][bold]Failed[/bold]: {e}[/red]")
     finally:
         # If the execution was successful
-        if success:
+        global GLOBAL_IGNORE_COMPLETE
+        if success and not GLOBAL_IGNORE_COMPLETE:
             # Record the end time of the function execution
             end_time = datetime.now().replace(microsecond=0)
 
@@ -457,7 +459,6 @@ def download_implementation(_: Info, ref: str, output_file: str, url: str, token
 )
 @click.option("--token", default=KodexaPlatform.get_access_token(), help="Access token")
 @click.option("--query", default="*", help="Limit the results using a query")
-@click.option("--path", default=None, help="JQ path to content you want")
 @click.option("--format", default=None, help="The format to output (json, yaml)")
 @click.option("--page", default=1, help="Page number")
 @click.option("--pageSize", default=10, help="Page size")
@@ -473,7 +474,6 @@ def get(
     url: str,
     token: str,
     query: str,
-    path: str = None,
     format=None,
     page: int = 1,
     pagesize: int = 10,
@@ -523,13 +523,13 @@ def get(
 
                 if format == "json":
                     print(
-                        Syntax(
-                            json.dumps(
-                                object_instance.model_dump(by_alias=True), indent=4
-                            ),
-                            "json",
-                        )
+                        json.dumps(
+                            object_instance.model_dump(by_alias=True), indent=4
+                        ),
+                        "json",
                     )
+                    global GLOBAL_IGNORE_COMPLETE
+                    GLOBAL_IGNORE_COMPLETE = True
                 elif format == "yaml" or not format:
                     object_dict = object_instance.model_dump(by_alias=True)
                     if output:
@@ -537,7 +537,9 @@ def get(
                         with open(output_filename, "w") as yaml_file:
                             yaml_file.write(yaml.dump(object_dict, indent=4))
                         print(f"YAML data saved to {output_filename}")
-                    print(Syntax(yaml.dump(object_dict, indent=4), "yaml"))
+                    print(yaml.dump(object_dict, indent=4), "yaml")
+                    global GLOBAL_IGNORE_COMPLETE
+                    GLOBAL_IGNORE_COMPLETE = True
             else:
                 organization = client.organizations.find_by_slug(ref)
 
