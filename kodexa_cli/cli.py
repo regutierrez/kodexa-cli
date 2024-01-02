@@ -497,18 +497,19 @@ def get(
         objects_endpoint = client.get_object_type(object_type)
         if ref and not ref.isspace():
             object_instance = objects_endpoint.get(ref)
-            from rich.syntax import Syntax
 
             if format == "json":
                 print(
-                    Syntax(
                         json.dumps(object_instance.model_dump(by_alias=True), indent=4),
                         "json",
-                    )
                 )
+                global GLOBAL_IGNORE_COMPLETE
+                GLOBAL_IGNORE_COMPLETE = True
             elif format == "yaml":
                 object_dict = object_instance.model_dump(by_alias=True)
-                print(Syntax(yaml.dump(object_dict, indent=4), "yaml"))
+                print(yaml.dump(object_dict, indent=4), "yaml")
+                global GLOBAL_IGNORE_COMPLETE
+                GLOBAL_IGNORE_COMPLETE = True
         else:
             print_object_table(
                 object_metadata, objects_endpoint, query, page, pagesize, sort
@@ -519,14 +520,12 @@ def get(
                 object_instance = client.get_object_by_ref(
                     object_metadata["plural"], ref
                 )
-                from rich.syntax import Syntax
 
                 if format == "json":
                     print(
                         json.dumps(
                             object_instance.model_dump(by_alias=True), indent=4
-                        ),
-                        "json",
+                        )
                     )
                     global GLOBAL_IGNORE_COMPLETE
                     GLOBAL_IGNORE_COMPLETE = True
@@ -537,7 +536,7 @@ def get(
                         with open(output_filename, "w") as yaml_file:
                             yaml_file.write(yaml.dump(object_dict, indent=4))
                         print(f"YAML data saved to {output_filename}")
-                    print(yaml.dump(object_dict, indent=4), "yaml")
+                    print(yaml.dump(object_dict, indent=4))
                     global GLOBAL_IGNORE_COMPLETE
                     GLOBAL_IGNORE_COMPLETE = True
             else:
