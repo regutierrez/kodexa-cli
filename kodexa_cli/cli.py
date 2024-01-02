@@ -526,11 +526,6 @@ def get(
                     GLOBAL_IGNORE_COMPLETE = True
                 elif format == "yaml" or not format:
                     object_dict = object_instance.model_dump(by_alias=True)
-                    if output:
-                        output_filename = output
-                        with open(output_filename, "w") as yaml_file:
-                            yaml_file.write(yaml.dump(object_dict, indent=4))
-                        print(f"YAML data saved to {output_filename}")
                     print(yaml.dump(object_dict, indent=4))
                     GLOBAL_IGNORE_COMPLETE = True
             else:
