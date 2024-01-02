@@ -171,8 +171,7 @@ def cli(info: Info, verbose: int):
         )
     info.verbose = verbose
 
-
-GLOBAL_IGNORE_COMPLETE = False
+global GLOBAL_IGNORE_COMPLETE
 
 def safe_entry_point():
     """
@@ -186,6 +185,8 @@ def safe_entry_point():
     """
     # Assuming that execution is successful initially
     success = True
+    global GLOBAL_IGNORE_COMPLETE
+    GLOBAL_IGNORE_COMPLETE = False
     print("")
     try:
         # Record the starting time of the function execution
