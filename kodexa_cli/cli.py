@@ -201,7 +201,6 @@ def safe_entry_point():
         print(f"\n:fire: [red][bold]Failed[/bold]: {e}[/red]")
     finally:
         # If the execution was successful
-        global GLOBAL_IGNORE_COMPLETE
         if success and not GLOBAL_IGNORE_COMPLETE:
             # Record the end time of the function execution
             end_time = datetime.now().replace(microsecond=0)
