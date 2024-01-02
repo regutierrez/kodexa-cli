@@ -489,6 +489,7 @@ def get(
     from kodexa.platform.client import resolve_object_type
 
     object_name, object_metadata = resolve_object_type(object_type)
+    global GLOBAL_IGNORE_COMPLETE
 
     if "global" in object_metadata and object_metadata["global"]:
         objects_endpoint = client.get_object_type(object_type)
@@ -500,12 +501,10 @@ def get(
                         json.dumps(object_instance.model_dump(by_alias=True), indent=4),
                         "json",
                 )
-                global GLOBAL_IGNORE_COMPLETE
                 GLOBAL_IGNORE_COMPLETE = True
             elif format == "yaml":
                 object_dict = object_instance.model_dump(by_alias=True)
                 print(yaml.dump(object_dict, indent=4), "yaml")
-                global GLOBAL_IGNORE_COMPLETE
                 GLOBAL_IGNORE_COMPLETE = True
         else:
             print_object_table(
@@ -524,7 +523,6 @@ def get(
                             object_instance.model_dump(by_alias=True), indent=4
                         )
                     )
-                    global GLOBAL_IGNORE_COMPLETE
                     GLOBAL_IGNORE_COMPLETE = True
                 elif format == "yaml" or not format:
                     object_dict = object_instance.model_dump(by_alias=True)
@@ -534,7 +532,6 @@ def get(
                             yaml_file.write(yaml.dump(object_dict, indent=4))
                         print(f"YAML data saved to {output_filename}")
                     print(yaml.dump(object_dict, indent=4))
-                    global GLOBAL_IGNORE_COMPLETE
                     GLOBAL_IGNORE_COMPLETE = True
             else:
                 organization = client.organizations.find_by_slug(ref)
