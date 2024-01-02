@@ -463,9 +463,6 @@ def download_implementation(_: Info, ref: str, output_file: str, url: str, token
 @click.option("--page", default=1, help="Page number")
 @click.option("--pageSize", default=10, help="Page size")
 @click.option("--sort", default=None, help="Sort by (ie. startDate:desc)")
-@click.option(
-    "--output", default=None, help="Output filename for JSON or YAML dump"
-)  # Added output option
 @pass_info
 def get(
     _: Info,
@@ -478,7 +475,6 @@ def get(
     page: int = 1,
     pagesize: int = 10,
     sort: str = None,
-    output: str = None,
 ):
     """
     List the instances of the component or entity type
