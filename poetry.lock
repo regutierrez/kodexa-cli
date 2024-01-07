@@ -315,13 +315,13 @@ i18n = ["Babel (>=2.7)"]
 
 [[package]]
 name = "kodexa"
-version = "7.0.7435066045"
+version = "7.0.7439177000"
 description = "Python SDK for the Kodexa Platform"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "kodexa-7.0.7435066045-py3-none-any.whl", hash = "sha256:f6b446f23ef752c1f3db196af1f16b4493ebbc37d1ccf836dcd8e2795190b2b2"},
-    {file = "kodexa-7.0.7435066045.tar.gz", hash = "sha256:1d75d174ec11edb3a92bdc03f6fd7ae08a8284390dac3fbd72c3207c43483b91"},
+    {file = "kodexa-7.0.7439177000-py3-none-any.whl", hash = "sha256:9153243664f1415c1520d4b32c88210fbab4491a16f54e222c289a794a798382"},
+    {file = "kodexa-7.0.7439177000.tar.gz", hash = "sha256:6850c91c96f1e2a8fa81206a5c588b08880ce4a41ba67a0c635c941083d79e55"},
 ]
 
 [package.dependencies]
