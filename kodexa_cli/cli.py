@@ -1001,7 +1001,7 @@ def delete(_: Info, object_type: str, ref: str, url: str, token: str):
 
 @cli.command()
 @pass_info
-@click.argument("profile")
+@click.argument("profile", required=True)
 @click.option(
     "--delete", default="false", help="Delete the named profile"
 )
