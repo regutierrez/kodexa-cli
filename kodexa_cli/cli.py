@@ -251,9 +251,9 @@ def upload(_: Info, ref: str, paths: list[str], token: str, url: str, threads: i
         with ThreadPoolExecutor(max_workers=threads) as executor:
             # Map the upload function to each file path
             for result in track(
-                executor.map(upload_file, paths),
-                total=len(paths),
-                description="Uploading files",
+                    executor.map(upload_file, paths),
+                    total=len(paths),
+                    description="Uploading files",
             ):
                 print(result)
         print("Upload complete :tada:")
@@ -294,17 +294,17 @@ def upload(_: Info, ref: str, paths: list[str], token: str, url: str, threads: i
 @click.argument("files", nargs=-1)
 @pass_info
 def deploy(
-    _: Info,
-    org: Optional[str],
-    file: str,
-    files: list[str],
-    url: str,
-    token: str,
-    format=None,
-    update: bool = False,
-    version=None,
-    overlay: Optional[str] = None,
-    slug=None,
+        _: Info,
+        org: Optional[str],
+        file: str,
+        files: list[str],
+        url: str,
+        token: str,
+        format=None,
+        update: bool = False,
+        version=None,
+        overlay: Optional[str] = None,
+        slug=None,
 ):
     """
     Deploy a component to a Kodexa platform instance from a file or stdin
@@ -372,7 +372,7 @@ def deploy(
         from rich.progress import track
 
         for idx in track(
-            range(len(files)), description=f"Deploying {len(files)} files"
+                range(len(files)), description=f"Deploying {len(files)} files"
         ):
             obj = {}
             file = files[idx]
@@ -466,16 +466,16 @@ def download_implementation(_: Info, ref: str, output_file: str, url: str, token
 @click.option("--sort", default=None, help="Sort by (ie. startDate:desc)")
 @pass_info
 def get(
-    _: Info,
-    object_type: str,
-    ref: Optional[str],
-    url: str,
-    token: str,
-    query: str,
-    format=None,
-    page: int = 1,
-    pagesize: int = 10,
-    sort: str = None,
+        _: Info,
+        object_type: str,
+        ref: Optional[str],
+        url: str,
+        token: str,
+        query: str,
+        format=None,
+        page: int = 1,
+        pagesize: int = 10,
+        sort: str = None,
 ):
     """
     List the instances of the component or entity type
@@ -498,8 +498,8 @@ def get(
 
             if format == "json":
                 print(
-                        json.dumps(object_instance.model_dump(by_alias=True), indent=4),
-                        "json",
+                    json.dumps(object_instance.model_dump(by_alias=True), indent=4),
+                    "json",
                 )
                 GLOBAL_IGNORE_COMPLETE = True
             elif format == "yaml":
@@ -657,23 +657,23 @@ def print_object_table(object_metadata, objects_endpoint, query, page, pagesize,
 @click.option("--sort", default=None, help="Sort by ie. name:asc")
 @pass_info
 def query(
-    _: Info,
-    query: list[str],
-    ref: str,
-    url: str,
-    token: str,
-    download: bool,
-    download_native: bool,
-    page: int,
-    pagesize: int,
-    sort: None,
-    filter: None,
-    reprocess: Optional[str] = None,
-    delete: bool = False,
-    stream: bool = False,
-    threads: int = 5,
-    limit: Optional[int] = None,
-    watch: Optional[int] = None,
+        _: Info,
+        query: list[str],
+        ref: str,
+        url: str,
+        token: str,
+        download: bool,
+        download_native: bool,
+        page: int,
+        pagesize: int,
+        sort: None,
+        filter: None,
+        reprocess: Optional[str] = None,
+        delete: bool = False,
+        stream: bool = False,
+        threads: int = 5,
+        limit: Optional[int] = None,
+        watch: Optional[int] = None,
 ):
     """
     Query the documents in a given document store
@@ -758,7 +758,7 @@ def query(
             )
 
             if delete and not Confirm.ask(
-                "You are sure you want to delete these families (this action can not be reverted)?"
+                    "You are sure you want to delete these families (this action can not be reverted)?"
             ):
                 print("Aborting delete")
                 exit(1)
@@ -777,7 +777,7 @@ def query(
             if stream:
                 print(f"Streaming document families (with {threads} threads)")
                 with concurrent.futures.ThreadPoolExecutor(
-                    max_workers=threads
+                        max_workers=threads
                 ) as executor:
 
                     def process_family(document_family):
@@ -874,13 +874,13 @@ def import_project(_: Info, org_slug: str, url: str, token: str, path: str):
 )
 @pass_info
 def send_event(
-    _: Info,
-    project_id: str,
-    assistant_id: str,
-    url: str,
-    file: str,
-    event_format: str,
-    token: str,
+        _: Info,
+        project_id: str,
+        assistant_id: str,
+        url: str,
+        file: str,
+        event_format: str,
+        token: str,
 ):
     """
     Send an event to an assistant
@@ -1001,6 +1001,28 @@ def delete(_: Info, object_type: str, ref: str, url: str, token: str):
 
 @cli.command()
 @pass_info
+@click.argument("profile")
+@click.option(
+    "--delete", default="false", help="Delete the named profile"
+)
+def profile(_: Info):
+    """
+    With no args it will print the current profile, if you provide an argument it will set the profile
+    with the --delete option it will delete the provided profile
+    """
+    if profile:
+        if delete:
+            print(f"Deleting profile {profile}")
+            KodexaPlatform.delete_profile(profile)
+        else:
+            print(f"Setting profile to {profile}")
+            KodexaPlatform.set_profile(profile)
+    else:
+        print(f"Current profile: {KodexaPlatform.get_current_profile()}")
+
+
+@cli.command()
+@pass_info
 def login(_: Info):
     """Logs into the specified platform environment using the email address and password provided,
     then downloads and stores the personal access token (PAT) of the user.
@@ -1014,12 +1036,12 @@ def login(_: Info):
         if kodexa_url == "":
             print("Using default as https://platform.kodexa.com")
             kodexa_url = "https://platform.kodexa.com"
-        username = input("Enter your email: ")
-        password = getpass("Enter your password: ")
+        token = input("Enter your token: ")
+        profile = input("Enter your profile name (default): ")
     except Exception as error:
         print("ERROR", error)
     else:
-        KodexaPlatform.login(kodexa_url, username, password)
+        KodexaPlatform.login(kodexa_url, token, profile)
 
 
 @cli.command()
@@ -1110,15 +1132,15 @@ def version(_: Info):
 @click.argument("files", nargs=-1)
 @pass_info
 def package(
-    _: Info,
-    path: str,
-    output: str,
-    version: str,
-    files: list[str] = None,
-    helm: bool = False,
-    package_name: Optional[str] = None,
-    repository: str = "kodexa",
-    strip_version_build: bool = False,
+        _: Info,
+        path: str,
+        output: str,
+        version: str,
+        files: list[str] = None,
+        helm: bool = False,
+        package_name: Optional[str] = None,
+        repository: str = "kodexa",
+        strip_version_build: bool = False,
 ):
     """
     Package an extension pack based on the kodexa.yml file
@@ -1200,16 +1222,16 @@ def package(
 
                 # We need to update the extension pack chart with the version
                 with open(
-                    f"{os.path.dirname(get_path())}/charts/extension-pack/Chart.yaml",
-                    "r",
+                        f"{os.path.dirname(get_path())}/charts/extension-pack/Chart.yaml",
+                        "r",
                 ) as stream:
                     chart_yaml = yaml.safe_load(stream)
                     chart_yaml["version"] = metadata_obj["version"]
                     chart_yaml["appVersion"] = metadata_obj["version"]
                     chart_yaml["name"] = "extension-meta-" + metadata_obj["slug"]
                     with open(
-                        f"{os.path.dirname(get_path())}/charts/extension-pack/Chart.yaml",
-                        "w",
+                            f"{os.path.dirname(get_path())}/charts/extension-pack/Chart.yaml",
+                            "w",
                     ) as stream:
                         yaml.safe_dump(chart_yaml, stream)
 
@@ -1230,8 +1252,8 @@ def package(
             print("Extension pack has been packaged :tada:")
 
         elif (
-            metadata_obj["type"].upper() == "STORE"
-            and metadata_obj["storeType"].upper() == "MODEL"
+                metadata_obj["type"].upper() == "STORE"
+                and metadata_obj["storeType"].upper() == "MODEL"
         ):
             model_content_metadata = ModelContentMetadata.model_validate(
                 metadata_obj["metadata"]
@@ -1288,21 +1310,21 @@ def package(
 
             # We need to update the extension pack chart with the version
             with open(
-                f"{os.path.dirname(get_path())}/charts/resource-pack/Chart.yaml", "r"
+                    f"{os.path.dirname(get_path())}/charts/resource-pack/Chart.yaml", "r"
             ) as stream:
                 chart_yaml = yaml.safe_load(stream)
                 chart_yaml["version"] = version
                 chart_yaml["appVersion"] = version
                 chart_yaml["name"] = package_name
                 with open(
-                    f"{os.path.dirname(get_path())}/charts/resource-pack/Chart.yaml",
-                    "w",
+                        f"{os.path.dirname(get_path())}/charts/resource-pack/Chart.yaml",
+                        "w",
                 ) as stream:
                     yaml.safe_dump(chart_yaml, stream)
 
             # We need to update the extension pack chart with the version
             with open(
-                f"{os.path.dirname(get_path())}/charts/resource-pack/values.yaml", "r"
+                    f"{os.path.dirname(get_path())}/charts/resource-pack/values.yaml", "r"
             ) as stream:
                 chart_yaml = yaml.safe_load(stream)
                 chart_yaml["image"][
@@ -1310,8 +1332,8 @@ def package(
                 ] = f"{repository}/{package_name}-container"
                 chart_yaml["image"]["tag"] = version
                 with open(
-                    f"{os.path.dirname(get_path())}/charts/resource-pack/values.yaml",
-                    "w",
+                        f"{os.path.dirname(get_path())}/charts/resource-pack/values.yaml",
+                        "w",
                 ) as stream:
                     yaml.safe_dump(chart_yaml, stream)
 
