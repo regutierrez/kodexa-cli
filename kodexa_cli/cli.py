@@ -1005,7 +1005,10 @@ def delete(_: Info, object_type: str, ref: str, url: str, token: str):
 @click.option(
     "--delete", default="false", help="Delete the named profile"
 )
-def profile(_: Info, profile: str, delete: bool):
+@click.option(
+    "--list", required=False, help="List profile names"
+)
+def profile(_: Info, profile: str, delete: bool, list: bool):
     """
     With no args it will print the current profile, if you provide an argument it will set the profile
     with the --delete option it will delete the provided profile
@@ -1018,7 +1021,10 @@ def profile(_: Info, profile: str, delete: bool):
             print(f"Setting profile to {profile}")
             KodexaPlatform.set_profile(profile)
     else:
-        print(f"Current profile: {KodexaPlatform.get_current_profile()}")
+        if list:
+            print(f"Profiles: {KodexaPlatform.list_profiles().join(', ')}")
+        else:
+            print(f"Current profile: {KodexaPlatform.get_current_profile()}")
 
 
 @cli.command()
