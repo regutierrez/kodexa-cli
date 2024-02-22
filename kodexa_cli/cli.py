@@ -1005,7 +1005,7 @@ def delete(_: Info, object_type: str, ref: str, url: str, token: str):
 @click.option(
     "--delete", default="false", help="Delete the named profile"
 )
-def profile(_: Info, profile, delete):
+def profile(_: Info, profile: str, delete: bool):
     """
     With no args it will print the current profile, if you provide an argument it will set the profile
     with the --delete option it will delete the provided profile
