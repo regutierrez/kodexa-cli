@@ -938,9 +938,9 @@ def platform(_: Info, python: bool, show_token: bool):
     platform_url = KodexaPlatform.get_url()
 
     if platform_url is not None:
-        print(f"Kodexa URL: {KodexaPlatform.get_url()}")
+        print(f"URL: {KodexaPlatform.get_url()}")
 
-        if (show_token):
+        if show_token:
             print(f"Access Token: {KodexaPlatform.get_access_token()}")
         kodexa_version = KodexaPlatform.get_server_info()
         print(f"Environment: {kodexa_version['environment']}")
