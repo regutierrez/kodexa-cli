@@ -1003,10 +1003,10 @@ def delete(_: Info, object_type: str, ref: str, url: str, token: str):
 @pass_info
 @click.argument("profile", required=False)
 @click.option(
-    "--delete", default="false", help="Delete the named profile"
+    "--delete/--no-delete", default=False, help="Delete the named profile"
 )
 @click.option(
-    "--list", required=False, help="List profile names"
+    "--list/--no-list", default=False, help="List profile names"
 )
 def profile(_: Info, profile: str, delete: bool, list: bool):
     """
@@ -1022,9 +1022,10 @@ def profile(_: Info, profile: str, delete: bool, list: bool):
             KodexaPlatform.set_profile(profile)
     else:
         if list:
-            print(f"Profiles: {KodexaPlatform.list_profiles().join(', ')}")
+            print(f"Profiles: {','.join(KodexaPlatform.list_profiles())}")
         else:
-            print(f"Current profile: {KodexaPlatform.get_current_profile()}")
+            print(
+                f"Current profile: {KodexaPlatform.get_current_profile()} [{KodexaPlatform.get_url(KodexaPlatform.get_current_profile())}]")
 
 
 @cli.command()
@@ -1043,11 +1044,14 @@ def login(_: Info):
             print("Using default as https://platform.kodexa.com")
             kodexa_url = "https://platform.kodexa.com"
         token = input("Enter your token: ")
-        profile = input("Enter your profile name (default): ")
+        profile_name = input("Enter your profile name (default): ")
     except Exception as error:
         print("ERROR", error)
     else:
-        KodexaPlatform.login(kodexa_url, token, profile)
+        try:
+            KodexaPlatform.login(kodexa_url, token, profile_name)
+        except Exception as error:
+            print("ERROR", error)
 
 
 @cli.command()
