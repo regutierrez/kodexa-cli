@@ -926,21 +926,26 @@ def send_event(
 @click.option(
     "--python/--no-python", default=False, help="Print out the header for a Python file"
 )
-def platform(_: Info, python: bool):
+@click.option(
+    "--show-token/--no-show-token", default=False, help="Show access token"
+)
+def platform(_: Info, python: bool, show_token: bool):
     """
     Get the details for the Kodexa instance we are logged into
     """
+
+    print(f"Profile: {KodexaPlatform.get_current_profile()}")
     platform_url = KodexaPlatform.get_url()
 
     if platform_url is not None:
         print(f"Kodexa URL: {KodexaPlatform.get_url()}")
+
+        if (show_token):
+            print(f"Access Token: {KodexaPlatform.get_access_token()}")
         kodexa_version = KodexaPlatform.get_server_info()
         print(f"Environment: {kodexa_version['environment']}")
         print(f"Version: {kodexa_version['version']}")
         print(f"Release: {kodexa_version['release']}")
-        print(f"Extension Packs:")
-        for ep in seq(kodexa_version["extensionPacks"]).map(lambda x: x["ref"]).list():
-            print(f"  {ep}")
         if python:
             print("\nPython example:\n\n")
             print(f"from kodexa import KodexaClient")
