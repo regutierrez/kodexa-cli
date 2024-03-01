@@ -3,7 +3,7 @@
 # and indexes into the k8s cluster, so they can be picked up and
 # installed by the Kodexa Server
 
-FROM nginxinc/nginx-unprivileged
+FROM nginxinc/nginx-unprivileged:stable-alpine-slim
 
 # We will copy all the model metadata and the index.json file
 # into the Minio instance
