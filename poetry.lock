@@ -316,13 +316,13 @@ i18n = ["Babel (>=2.7)"]
 
 [[package]]
 name = "kodexa"
-version = "7.0.8102818303"
+version = "7.0.8159679110"
 description = "Python SDK for the Kodexa Platform"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "kodexa-7.0.8102818303-py3-none-any.whl", hash = "sha256:3dc27e87fa677f1b277fe599bf87614314ca752aaad43afeaafe3101bc8930a2"},
-    {file = "kodexa-7.0.8102818303.tar.gz", hash = "sha256:a0832e1463ca1aaa231ae89391b3a42d0f368d2de182bdc3fab73c09d852c7a4"},
+    {file = "kodexa-7.0.8159679110-py3-none-any.whl", hash = "sha256:f677cd30c25502f95bb5727791ff6adcf6af311d26c1201fba533a175641fd3c"},
+    {file = "kodexa-7.0.8159679110.tar.gz", hash = "sha256:ea72aaf735feba8c6912e1880abe99a3932ca8ea2b66c6532fa053cd66c502ae"},
 ]
 
 [package.dependencies]
@@ -550,6 +550,7 @@ files = [
     {file = "msgpack-1.0.8-cp39-cp39-win32.whl", hash = "sha256:f9af38a89b6a5c04b7d18c492c8ccf2aee7048aff1ce8437c4683bb5a1df893d"},
     {file = "msgpack-1.0.8-cp39-cp39-win_amd64.whl", hash = "sha256:ed59dd52075f8fc91da6053b12e8c89e37aa043f8986efd89e61fae69dc1b011"},
     {file = "msgpack-1.0.8-py3-none-any.whl", hash = "sha256:24f727df1e20b9876fa6e95f840a2a2651e34c0ad147676356f4bf5fbb0206ca"},
+    {file = "msgpack-1.0.8.tar.gz", hash = "sha256:95c02b0e27e706e48d0e5426d1710ca78e0f0628d6e89d5b5a5b91a5f12274f3"},
 ]
 
 [[package]]
