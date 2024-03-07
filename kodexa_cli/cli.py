@@ -192,7 +192,7 @@ def safe_entry_point():
     try:
         # Record the starting time of the function execution
         start_time = datetime.now().replace(microsecond=0)
-        print(f"Using profile {KodexaPlatform.get_current_profile()} [{KodexaPlatform.get_url()}]\n")
+        print(f"Using profile {KodexaPlatform.get_current_profile()} @ {KodexaPlatform.get_url()}\n")
 
         # Call the cli() function
         cli()
