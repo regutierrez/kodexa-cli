@@ -37,8 +37,6 @@ logging.root.addHandler(logging.StreamHandler(sys.stdout))
 from kodexa import KodexaClient
 from kodexa.platform.kodexa import KodexaPlatform
 
-global GLOBAL_IGNORE_COMPLETE
-
 LOGGING_LEVELS = {
     0: logging.NOTSET,
     1: logging.ERROR,
