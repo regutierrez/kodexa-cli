@@ -321,7 +321,7 @@ def deploy(
 
         if overlay is not None:
             print("Reading overlay")
-            if overlay.endswith("yaml") or overlay.endswith("yml"):
+            if overlay.endswith(("yaml", "yml")):
                 overlay_obj = yaml.safe_load(sys.stdin.read())
             elif overlay.endswith("json"):
                 overlay_obj = json.loads(sys.stdin.read())
