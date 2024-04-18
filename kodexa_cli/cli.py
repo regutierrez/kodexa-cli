@@ -166,7 +166,7 @@ def cli(info: Info, verbose: int):
         )
         click.echo(
             click.style(
-                f"Verbose logging is enabled. "
+                "Verbose logging is enabled. "
                 f"(LEVEL={logging.root.getEffectiveLevel()})",
                 fg="yellow",
             )
@@ -541,7 +541,7 @@ def get(
                     object_metadata, objects_endpoint, query, page, pagesize, sort
                 )
         else:
-            print(f"You must provide a ref to get a specific object")
+            print("You must provide a ref to get a specific object")
             exit(1)
 
 
@@ -720,7 +720,7 @@ def query(
             if not stream:
                 from rich.table import Table
 
-                table = Table(title=f"Listing Document Family", title_style="bold blue")
+                table = Table(title="Listing Document Family", title_style="bold blue")
                 column_list = ["path", "created", "modified", "size"]
                 # Create column header for the table
                 for col in column_list:
@@ -949,7 +949,7 @@ def platform(_: Info, python: bool, show_token: bool):
         print(f"Release: {kodexa_version['release']}")
         if python:
             print("\nPython example:\n\n")
-            print(f"from kodexa import KodexaClient")
+            print("from kodexa import KodexaClient")
             print(
                 f"client = KodexaClient('{KodexaPlatform.get_url()}', '{KodexaPlatform.get_access_token()}')"
             )
@@ -989,7 +989,7 @@ def delete(_: Info, object_type: str, ref: str, url: str, token: str):
         if confirm_delete:
             print(f"Deleting {object_type} {ref}")
             object_endpoint.delete()
-            print(f"Deleted")
+            print("Deleted")
     else:
         if ref and not ref.isspace():
             object_endpoint = client.get_object_by_ref(object_metadata["plural"], ref)
@@ -999,9 +999,9 @@ def delete(_: Info, object_type: str, ref: str, url: str, token: str):
             if confirm_delete:
                 print(f"Deleting {object_type} {ref}")
                 object_endpoint.delete()
-                print(f"Deleted")
+                print("Deleted")
         else:
-            print(f"You must provide a ref to get a specific object")
+            print("You must provide a ref to get a specific object")
             exit(1)
 
 
